@@ -4,6 +4,7 @@ uint64_t freeMemory; // Free memory of the entire system
 uint64_t reservedMemory;
 uint64_t usedMemory; // Allocated memory
 static bool Initialised = false;
+PageFrameAllocator GlobalAllocator;
 
 void PageFrameAllocator::InitBitmap( size_t bitmapSize, void* bufferAddress )
 {
