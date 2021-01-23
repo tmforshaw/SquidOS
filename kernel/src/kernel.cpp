@@ -1,9 +1,9 @@
-#include "BasicRenderer.hpp"
-#include "Bitmap.hpp"
-#include "C_String.hpp"
-#include "EFI_Memory.hpp"
-#include "Memory.hpp"
-#include "PageFrameAllocator.hpp"
+#include "Memory/EFI_Memory.hpp"
+#include "Memory/Memory.hpp"
+#include "Paging/PageFrameAllocator.hpp"
+#include "Rendering/BasicRenderer.hpp"
+#include "Types/Bitmap.hpp"
+#include "Types/C_String.hpp"
 
 struct BootInfo
 {
