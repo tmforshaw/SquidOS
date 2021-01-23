@@ -130,6 +130,14 @@ int memcmp(const void* aptr, const void* bptr, size_t n)
 	return 0;
 }
 
+typedef struct {
+	Framebuffer* framebuffer;
+	PSF1_FONT* psf1_font;
+	EFI_MEMORY_DESCRIPTOR* m_Map;
+	UINTN m_MapSize;
+	UINTN m_MapDescriptorSize;
+} BootInfo;
+
 EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
 	InitializeLib(ImageHandle, SystemTable);
@@ -154,8 +162,6 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 		Kernel->Read(Kernel, &size, &header);
 	}
 
-	// clang-format off
-
 	if(
 		memcmp(&header.e_ident[EI_MAG0], ELFMAG, SELFMAG) != 0 || 
 		header.e_ident[EI_CLASS] != ELFCLASS64 ||
@@ -172,8 +178,6 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 		Print(L"Kernel header successfully verified.\n\r");
 	}
 
-	// clang-format on
-
 	Elf64_Phdr* phdrs;
 	{
 		Kernel->SetPosition(Kernel, header.e_phoff);
@@ -183,11 +187,9 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 	}
 
 	for (
-		// clang-format off
 		Elf64_Phdr* phdr = phdrs;
 		(char*)phdr < (char*)phdrs + header.e_phnum * header.e_phentsize;
 		phdr = (Elf64_Phdr*)((char*)phdr + header.e_phentsize)
-		// clang-format on
 	)
 	{
 		switch (phdr->p_type)
@@ -208,12 +210,6 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 
 	Print(L"Kernel loaded.\n\r");
 
-	// Call the entry of the kernel
-
-	// clang-format off
-	void (*KernelStart)(Framebuffer*, PSF1_FONT*) = ((__attribute__((sysv_abi)) void (*)(Framebuffer*, PSF1_FONT*) ) header.e_entry); // Defines integer function ptr at correct address and assigns it attrib that allows correct function calling
-	// clang-format on
-
 	PSF1_FONT* newFont = LoadPSF1Font(NULL, L"zap-light16.psf", ImageHandle, SystemTable);
 	if (newFont == NULL)
 		Print(L"New font is not valid, or is not found.\n\r");
@@ -227,17 +223,37 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 		Size: 0x%x\n\r\
 		Width: %d\n\r\
 		Height: %d\n\r\
-		PixelsPerScanLine: %d\n\r\
-		\n\r",
+		PixelsPerScanLine: %d\n\r",
 		newBuffer->BaseAddress,
 		newBuffer->BufferSize,
 		newBuffer->Width,
 		newBuffer->Height,
 		newBuffer->PixelsPerScanLine);
 
-	Print(L"\n\rStarting kernel.\n\r");
+	EFI_MEMORY_DESCRIPTOR* Map = NULL;
+	UINTN MapSize, MapKey;
+	UINTN DescriptorSize;
+	UINT32 DescriptorVersion;
+	{
+		SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
+		SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void**)(&Map));
+		SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
+	}
 
-	KernelStart(newBuffer, newFont);
+	void (*KernelStart)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*) ) header.e_entry); // Defines integer function ptr at correct address and assigns it attrib that allows correct function calling
+
+	BootInfo bootInfo;
+	bootInfo.framebuffer = newBuffer;
+	bootInfo.psf1_font = newFont;
+	bootInfo.m_Map = Map;
+	bootInfo.m_MapSize = MapSize;
+	bootInfo.m_MapDescriptorSize = DescriptorSize;
+
+	Print(L"Exiting boot services.\n\r");
+	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
+
+	Print(L"\n\rStarting kernel.\n\r");
+	KernelStart(&bootInfo);
 
 	return EFI_SUCCESS; // Exit the UEFI application
 }
