@@ -1,9 +1,12 @@
 #include "KernelUtil.hpp"
 
 #include "GDT/GDT.hpp"
+#include "Interrupts/IDT.hpp"
+#include "Interrupts/Interrupts.hpp"
 
 KernelInfo kernelInfo;
 PageTableManager pageTableManager = NULL;
+IDTR idtr;
 
 void PrepareMemory( BootInfo* bootInfo )
 {
@@ -41,8 +44,28 @@ void PrepareMemory( BootInfo* bootInfo )
 	kernelInfo.pageTableManager = &pageTableManager;
 }
 
+void PrepareInterrupts()
+{
+	idtr.Limit = 0x0FFF;
+	idtr.Offset = (uint64_t)GlobalAllocator.RequestPage();
+
+	IDT_DescEntry* int_PageFault = (IDT_DescEntry*)( idtr.Offset + 0xE * sizeof( IDT_DescEntry ) );
+
+	int_PageFault->SetOffset( (uint64_t)PageFault_Handler );
+	int_PageFault->Type_attr = IDT_TA_InterruptGate;
+	int_PageFault->Selector = 0x08;
+
+	asm( "lidt %0"
+		 :
+		 : "m"( idtr ) ); // Moves idtr and loads gdt
+}
+
+BasicRenderer r = BasicRenderer( NULL, NULL );
 KernelInfo InitialiseKernel( BootInfo* bootInfo )
 {
+	r = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );
+	GlobalRenderer = &r;
+
 	GDT_Descriptor gdtDescriptor;
 	gdtDescriptor.Size = sizeof( GDT ) - 1;
 	gdtDescriptor.Offset = ( uint64_t )( &DefaultGDT );
@@ -51,6 +74,8 @@ KernelInfo InitialiseKernel( BootInfo* bootInfo )
 	PrepareMemory( bootInfo );
 
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize ); // Set frame buffer to black
+
+	PrepareInterrupts();
 
 	return kernelInfo;
 }

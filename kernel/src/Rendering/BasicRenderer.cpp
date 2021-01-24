@@ -1,5 +1,7 @@
 #include "BasicRenderer.hpp"
 
+BasicRenderer* GlobalRenderer;
+
 BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, unsigned int p_Colour )
 {
 	CursorPosition = { 0, 0 };

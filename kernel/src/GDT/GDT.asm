@@ -13,4 +13,5 @@ LoadGDT:
     push rax
     push rdi
     retfq
+    
 GLOBAL LoadGDT
