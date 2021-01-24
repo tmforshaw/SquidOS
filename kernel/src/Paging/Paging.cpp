@@ -18,12 +18,12 @@ bool PageDirectoryEntry::GetFlag( PT_Flag flag )
 
 uint64_t PageDirectoryEntry::GetAddress()
 {
-	return ( Value & 0x000FFFFFFFFFF000 >> 12 );
+	return ( Value & 0x000FFFFFFFFFF000 ) >> 12;
 }
 
 void PageDirectoryEntry::SetAddress( uint64_t address )
 {
 	address &= 0x000000FFFFFFFFFF;
 	Value &= 0xFFF0000000000FFF;
-	Value |= ( address ) >> 12;
+	Value |= ( address ) << 12;
 }

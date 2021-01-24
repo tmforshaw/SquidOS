@@ -5,6 +5,7 @@ uint64_t reservedMemory;
 uint64_t usedMemory; // Allocated memory
 static bool Initialised = false;
 PageFrameAllocator GlobalAllocator;
+static uint64_t pageBitmapIndex = 0; // Index for requesting a page
 
 void PageFrameAllocator::InitBitmap( size_t bitmapSize, void* bufferAddress )
 {
@@ -25,6 +26,9 @@ void PageFrameAllocator::FreePage( void* address )
 	{
 		freeMemory += 4096;
 		usedMemory -= 4096;
+
+		// Change the pagingIndex
+		if ( pageBitmapIndex > index ) pageBitmapIndex = index;
 	}
 }
 
@@ -51,6 +55,9 @@ void PageFrameAllocator::UnreservePage( void* address )
 	{
 		freeMemory += 4096;
 		reservedMemory -= 4096;
+
+		// Change the pagingIndex
+		if ( pageBitmapIndex > index ) pageBitmapIndex = index;
 	}
 }
 
@@ -138,13 +145,13 @@ void PageFrameAllocator::ReadEFIMemoryMap( EFI_MEMORY_DESCRIPTOR* m_Map, size_t 
 void* PageFrameAllocator::RequestPage()
 {
 
-	for ( uint64_t index = 0; index < PageBitmap.Size * 8; index++ )
+	for ( ; pageBitmapIndex < PageBitmap.Size * 8; pageBitmapIndex++ )
 	{
-		if ( PageBitmap[index] == true ) continue;
+		if ( PageBitmap[pageBitmapIndex] == true ) continue;
 
-		LockPage( (void*)( index * 4096 ) );
+		LockPage( (void*)( pageBitmapIndex * 4096 ) );
 
-		return (void*)( index * 4096 );
+		return (void*)( pageBitmapIndex * 4096 );
 	}
 
 	return nullptr; // Page Frame Swap to file

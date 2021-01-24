@@ -36,14 +36,14 @@ void PrepareMemory( BootInfo* bootInfo )
 		 :
 		 : "r"( PML4 ) ); // Put PLM4 into register 0, then execute command
 
-	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize ); // Set frame buffer to black
-
 	kernelInfo.pageTableManager = &pageTableManager;
 }
 
 KernelInfo InitialiseKernel( BootInfo* bootInfo )
 {
 	PrepareMemory( bootInfo );
+
+	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize ); // Set frame buffer to black
 
 	return kernelInfo;
 }

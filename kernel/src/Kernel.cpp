@@ -4,11 +4,10 @@ extern "C" void _start( BootInfo* bootInfo )
 {
 	KernelInfo kernelInfo = InitialiseKernel( bootInfo );
 	PageTableManager* PageTableManager = kernelInfo.pageTableManager;
+	BasicRenderer renderer = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );
 
-	BasicRenderer newRenderer = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );
+	renderer.Print( "Kernel Initialised Successfully" );
 
-	newRenderer.Print( "OIOIOI" );
-
-	while ( true )
-		;
+	// clang-format off
+	while ( true );
 }
