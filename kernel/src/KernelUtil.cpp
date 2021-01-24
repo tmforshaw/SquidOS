@@ -1,5 +1,7 @@
 #include "KernelUtil.hpp"
 
+#include "GDT/GDT.hpp"
+
 KernelInfo kernelInfo;
 PageTableManager pageTableManager = NULL;
 
@@ -41,6 +43,11 @@ void PrepareMemory( BootInfo* bootInfo )
 
 KernelInfo InitialiseKernel( BootInfo* bootInfo )
 {
+	GDT_Descriptor gdtDescriptor;
+	gdtDescriptor.Size = sizeof( GDT ) - 1;
+	gdtDescriptor.Offset = ( uint64_t )( &DefaultGDT );
+	LoadGDT( &gdtDescriptor );
+
 	PrepareMemory( bootInfo );
 
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize ); // Set frame buffer to black
