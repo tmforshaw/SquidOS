@@ -1,19 +1,30 @@
 #pragma once
 #include <stdint.h>
 
+enum PT_Flag
+{
+	Present = 0,   // Exists
+	ReadWrite = 1, // You can read or write
+	UserSuper = 2, // Accessable by user or an admin
+	WriteThrough = 3,
+	CacheDisabled = 4,
+	Accesssed = 5,	 // Set to true whenever the CPU accesses this page in memory
+	LargerPages = 7, // Turns child page directory into a page (with the same size it would have had),
+	Custom0 = 9,
+	Custom1 = 10,
+	Custom2 = 11,
+	NX = 63 // Not executable bit (Only if supported)
+};
+
 struct PageDirectoryEntry
 {
-	bool Present : 1;	// Exists
-	bool ReadWrite : 1; // You can read or write
-	bool UserSuper : 1; // Accessable by user or an admin
-	bool WriteThrough : 1;
-	bool CacheDisabled : 1;
-	bool Accesssed : 1;	  // Set to true whenever the CPU accesses this page in memory
-	bool Ignore0 : 1;	  // Ignore (Unusable bit)
-	bool LargerPages : 1; // Turns child page directory into a page (with the same size it would have had)
-	bool Ignore1 : 1;
-	uint8_t Available : 3; // Can be used for anything
-	uint64_t Address : 52;
+	uint64_t Value;
+
+	void SetFlag( PT_Flag flag, bool enabled );
+	bool GetFlag( PT_Flag flag );
+
+	void SetAddress( uint64_t address );
+	uint64_t GetAddress();
 };
 
 struct PageTable

@@ -32,7 +32,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 link:
 	@echo !--- Linking $^ ---!
-	@$(LD) $(LDFLAGS) -o $(BUILDDIR)/kernel.elf $(OBJS)
+	@$(LD) $(LDFLAGS) -o $(BUILDDIR)/Kernel.elf $(OBJS)
 
 setup:
 	@mkdir $(BUILDDIR)
@@ -46,7 +46,7 @@ buildimg:
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI/BOOT
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BOOTEFI) ::/EFI/BOOT
 	mcopy -i $(BUILDDIR)/$(OSNAME).img startup.nsh ::
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/kernel.elf ::
+	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/Kernel.elf ::
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(FONTDIR)/zap-light16.psf ::
 
 run:
