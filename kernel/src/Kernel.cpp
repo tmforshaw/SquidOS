@@ -6,9 +6,7 @@ extern "C" void _start( BootInfo* bootInfo )
 	PageTableManager* PageTableManager = kernelInfo.pageTableManager;
 
 	GlobalRenderer->Print( "Kernel Initialised Successfully" );
-
-	int* test = (int*)( 0x90000000000 );
-	*test = 2;
+	GlobalRenderer->Endl();
 
 	// clang-format off
 	while ( true );

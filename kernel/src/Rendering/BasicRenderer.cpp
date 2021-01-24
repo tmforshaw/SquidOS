@@ -46,3 +46,26 @@ void BasicRenderer::Print( const char* str )
 		chr++;
 	}
 }
+
+void BasicRenderer::Clear( uint32_t colour )
+{
+	uint64_t fbBase = (uint64_t)TargetFramebuffer->BaseAddress;
+	uint64_t bytePerScanLine = TargetFramebuffer->PixelsPerScanLine * 4;
+	uint64_t fbHeight = TargetFramebuffer->Height;
+	uint64_t fbSize = TargetFramebuffer->BufferSize;
+
+	for ( int verticalScanLine = 0; verticalScanLine < fbHeight; verticalScanLine++ )
+	{
+		uint64_t pixPtrBase = fbBase + ( bytePerScanLine * verticalScanLine ); // First pixel on row
+
+		for ( uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)( pixPtrBase + bytePerScanLine ); pixPtr++ )
+			*pixPtr = colour;
+	}
+
+	GlobalRenderer->CursorPosition = { 0, 0 }; // Reset CursorPosition
+}
+
+void BasicRenderer::Endl()
+{
+	CursorPosition = { 0, CursorPosition.Y + PSF1_Font->psf1_Header->charsize };
+}

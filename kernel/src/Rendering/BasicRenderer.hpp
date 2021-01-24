@@ -3,6 +3,8 @@
 #include "../Types/PSF1Font.hpp"
 #include "FrameBuffer.hpp"
 
+#include <stdint.h>
+
 class BasicRenderer
 {
 private:
@@ -16,6 +18,9 @@ public:
 
 	void PutChar( char chr, unsigned int xOff, unsigned int yOff );
 	void Print( const char* str );
+
+	void Clear( uint32_t colour );
+	void Endl();
 };
 
 extern BasicRenderer* GlobalRenderer;

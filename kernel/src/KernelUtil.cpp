@@ -1,6 +1,7 @@
 #include "KernelUtil.hpp"
 
 #include "GDT/GDT.hpp"
+#include "IO/IO.hpp"
 #include "Interrupts/IDT.hpp"
 #include "Interrupts/Interrupts.hpp"
 
@@ -49,15 +50,40 @@ void PrepareInterrupts()
 	idtr.Limit = 0x0FFF;
 	idtr.Offset = (uint64_t)GlobalAllocator.RequestPage();
 
+	// Page fault
 	IDT_DescEntry* int_PageFault = (IDT_DescEntry*)( idtr.Offset + 0xE * sizeof( IDT_DescEntry ) );
-
 	int_PageFault->SetOffset( (uint64_t)PageFault_Handler );
 	int_PageFault->Type_attr = IDT_TA_InterruptGate;
 	int_PageFault->Selector = 0x08;
 
+	// Double fault
+	IDT_DescEntry* int_DoubleFault = (IDT_DescEntry*)( idtr.Offset + 0x8 * sizeof( IDT_DescEntry ) );
+	int_DoubleFault->SetOffset( (uint64_t)DoubleFault_Handler );
+	int_DoubleFault->Type_attr = IDT_TA_InterruptGate;
+	int_DoubleFault->Selector = 0x08;
+
+	// General protection fault
+	IDT_DescEntry* int_GPFault = (IDT_DescEntry*)( idtr.Offset + 0xD * sizeof( IDT_DescEntry ) );
+	int_GPFault->SetOffset( (uint64_t)GPFault_Handler );
+	int_GPFault->Type_attr = IDT_TA_InterruptGate;
+	int_GPFault->Selector = 0x08;
+
+	// Keyboard handler
+	IDT_DescEntry* int_Keyboard = (IDT_DescEntry*)( idtr.Offset + 0x21 * sizeof( IDT_DescEntry ) );
+	int_Keyboard->SetOffset( (uint64_t)KeyboardInt_Handler );
+	int_Keyboard->Type_attr = IDT_TA_InterruptGate;
+	int_Keyboard->Selector = 0x08;
+
 	asm( "lidt %0"
 		 :
 		 : "m"( idtr ) ); // Moves idtr and loads gdt
+
+	RemapPIC();
+
+	outb( PIC1_DATA, 0b11111101 ); // Unmask second interrupt
+	outb( PIC2_DATA, 0b11111111 );
+
+	asm( "sti" ); // Enable maskable interrupts
 }
 
 BasicRenderer r = BasicRenderer( NULL, NULL );
