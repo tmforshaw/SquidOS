@@ -1,8 +1,10 @@
 #include "BasicRenderer.hpp"
 
+#include "../Types/C_String.hpp"
+
 BasicRenderer* GlobalRenderer;
 
-BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, unsigned int p_Colour )
+BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour )
 {
 	CursorPosition = { 0, 0 };
 
@@ -11,9 +13,9 @@ BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF
 	Colour = p_Colour;
 }
 
-void BasicRenderer::PutChar( char chr, unsigned int xOff, unsigned int yOff )
+void BasicRenderer::PutChar( char chr, uint32_t xOff, uint32_t yOff )
 {
-	unsigned int* pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
+	uint32_t* pixPtr = (uint32_t*)TargetFramebuffer->BaseAddress;
 	char* fontPtr = (char*)PSF1_Font->glyphBuffer + ( chr * PSF1_Font->psf1_Header->charsize ); // Get address of the glyph buffer, then add on chr * charsize (Indexing glyph buffer)
 
 	// Select the bit in the bitmap
@@ -23,7 +25,7 @@ void BasicRenderer::PutChar( char chr, unsigned int xOff, unsigned int yOff )
 		{
 			if ( ( *fontPtr & ( 0b10000000 >> ( x - xOff ) ) ) > 0 ) // Select the bit that we need
 			{
-				*(unsigned int*)( pixPtr + x + ( y * TargetFramebuffer->PixelsPerScanLine ) ) = Colour; // Set colour
+				*(uint32_t*)( pixPtr + x + ( y * TargetFramebuffer->PixelsPerScanLine ) ) = Colour; // Set colour
 			}
 		}
 		fontPtr++;
@@ -38,11 +40,13 @@ void BasicRenderer::Print( const char* str )
 	{
 		PutChar( *chr, CursorPosition.X, CursorPosition.Y );
 		CursorPosition.X += 8;
+
 		if ( CursorPosition.X + 8 > TargetFramebuffer->Width )
 		{
 			CursorPosition.X = 0;
 			CursorPosition.Y += PSF1_Font->psf1_Header->charsize;
 		}
+
 		chr++;
 	}
 }
@@ -52,7 +56,6 @@ void BasicRenderer::Clear( uint32_t colour )
 	uint64_t fbBase = (uint64_t)TargetFramebuffer->BaseAddress;
 	uint64_t bytePerScanLine = TargetFramebuffer->PixelsPerScanLine * 4;
 	uint64_t fbHeight = TargetFramebuffer->Height;
-	uint64_t fbSize = TargetFramebuffer->BufferSize;
 
 	for ( int verticalScanLine = 0; verticalScanLine < fbHeight; verticalScanLine++ )
 	{
@@ -68,4 +71,10 @@ void BasicRenderer::Clear( uint32_t colour )
 void BasicRenderer::Endl()
 {
 	CursorPosition = { 0, CursorPosition.Y + PSF1_Font->psf1_Header->charsize };
+}
+
+// Drawing
+
+void BasicRenderer::Line( Point p1, Point p2 )
+{
 }

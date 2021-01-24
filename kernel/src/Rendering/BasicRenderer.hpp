@@ -1,5 +1,5 @@
 #pragma once
-#include "../Math.hpp"
+#include "../Math/Math.hpp"
 #include "../Types/PSF1Font.hpp"
 #include "FrameBuffer.hpp"
 
@@ -12,15 +12,19 @@ public:
 	Point CursorPosition;
 	Framebuffer* TargetFramebuffer;
 	PSF1_FONT* PSF1_Font;
-	unsigned int Colour;
+	uint32_t Colour;
 
-	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, unsigned int p_Colour = 0xFF00FFFF );
+	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = 0xFF00FFFF );
 
-	void PutChar( char chr, unsigned int xOff, unsigned int yOff );
+	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
 	void Print( const char* str );
 
 	void Clear( uint32_t colour );
 	void Endl();
+
+	// Drawing
+
+	void Line( Point p1, Point p2 );
 };
 
 extern BasicRenderer* GlobalRenderer;

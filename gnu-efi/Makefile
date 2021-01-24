@@ -76,11 +76,11 @@ mkvars:
 	@echo TOPDIR=$(TOPDIR)
 
 $(SUBDIRS):
-	mkdir -p $(OBJDIR)/$@
-	$(MAKE) -C $(OBJDIR)/$@ -f $(SRCDIR)/$@/Makefile SRCDIR=$(SRCDIR)/$@ ARCH=$(ARCH)
+	@mkdir -p $(OBJDIR)/$@
+	@$(MAKE) -C $(OBJDIR)/$@ -f $(SRCDIR)/$@/Makefile SRCDIR=$(SRCDIR)/$@ ARCH=$(ARCH)
 
 clean:
-	rm -f *~
+	@rm -f *~
 	@for d in $(SUBDIRS); do \
 		if [ -d $(OBJDIR)/$$d ]; then \
 			$(MAKE) -C $(OBJDIR)/$$d -f $(SRCDIR)/$$d/Makefile SRCDIR=$(SRCDIR)/$$d clean; \
