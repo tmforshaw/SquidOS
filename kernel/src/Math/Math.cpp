@@ -1,5 +1,40 @@
 #include "Math.hpp"
 
+// Constants
+
+float Math::PI = 3.14159265f;
+double Math::PI_Long = 3.141592653589793;
+
+float Math::PI_Sqr = 9.86960440f;
+double Math::PI_Sqr_Long = 9.86960440109; // Could be more accurate
+
+float Math::TAU = 6.28318530f;
+double Math::TAU_LONG = 6.2831853071795862;
+
+float Math::TAU_Sqr = 39.4784176f;
+double Math::TAU_Sqr_Long = 39.47841760436;
+
+// Functions
+
+// Abs
+
+template<typename T>
+T abs( T x )
+{
+	if ( x >= 0 )
+		return x;
+
+	return x * -1;
+}
+
+int8_t abs( int8_t x ) { return abs<int8_t>( x ); }
+int16_t abs( int16_t x ) { return abs<int16_t>( x ); }
+int32_t abs( int32_t x ) { return abs<int32_t>( x ); }
+int64_t abs( int64_t x ) { return abs<int64_t>( x ); }
+
+float abs( float x ) { return abs<float>( x ); }
+double abs( double x ) { return abs<double>( x ); }
+
 // Min
 
 template<typename T>
@@ -46,13 +81,24 @@ int64_t max( int64_t v1, int64_t v2 ) { return max<int64_t>( v1, v2 ); }
 float max( float v1, float v2 ) { return max<float>( v1, v2 ); }
 double max( double v1, double v2 ) { return max<double>( v1, v2 ); }
 
+// Fmod
+
+float fmod( float val, float div )
+{
+	if ( div == 0 ) return 0;
+
+	float ratio = val / div;
+
+	return val - div * ( ratio - (uint32_t)ratio );
+}
+
 // Power
 
-template<typename T>
-T pow( T val, T p )
+template<typename T1, typename T2 = T1>
+T1 pow( T1 val, T2 p )
 {
-	T retVal = val;
-	for ( T i = 1; i < p; i++ )
+	T1 retVal = val;
+	for ( T2 i = 1; i < p; i++ )
 		retVal *= val;
 
 	return retVal;
@@ -66,6 +112,11 @@ uint32_t pow( uint32_t val, uint32_t p ) { return pow<uint32_t>( val, p ); }
 int32_t pow( int32_t val, int32_t p ) { return pow<int32_t>( val, p ); }
 uint64_t pow( uint64_t val, uint64_t p ) { return pow<uint64_t>( val, p ); }
 int64_t pow( int64_t val, int64_t p ) { return pow<int64_t>( val, p ); }
+
+float pow( float val, uint32_t p ) { return pow<float, uint32_t>( val, p ); }
+float pow( float val, int32_t p ) { return pow<float, int32_t>( val, p ); }
+double pow( double val, uint32_t p ) { return pow<double, uint32_t>( val, p ); }
+double pow( double val, int32_t p ) { return pow<double, int32_t>( val, p ); }
 
 // Sqrt
 
@@ -111,3 +162,59 @@ uint64_t factorial( uint32_t x ) { return factorial<uint32_t>( x ); }
 uint64_t factorial( int32_t x ) { return factorial<int32_t>( x ); }
 uint64_t factorial( uint64_t x ) { return factorial<uint64_t>( x ); }
 uint64_t factorial( int64_t x ) { return factorial<int64_t>( x ); }
+
+// Radians and Degrees
+
+float radiansToDegrees( float rad ) { return rad * 180 / Math::PI; }
+double radiansToDegrees( double rad ) { return rad * 180 / Math::PI_Long; }
+
+float degreesToRadians( float deg ) { return deg * Math::PI / 180; }
+double degreesToRadians( double deg ) { return deg * Math::PI_Long / 180; }
+
+// Trig
+
+template<typename T>
+T sin( T x, uint16_t depth )
+{
+	T value = fmod( x + 2 * Math::PI, 4 * Math::PI ) - 2 * Math::PI; // Clamp between -2pi and 2pi
+
+	// Using a quadratic graph
+
+	return -0.417698 * value * value + 1.312236 * value - 0.050465;
+}
+
+float sin( float x, uint16_t depth ) { return sin<float>( x, depth ); }
+double sin( double x, uint16_t depth ) { return sin<double>( x, depth ); }
+
+float cos( float x, uint16_t depth ) { return sin<float>( Math::PI / 2 - x, depth ); }
+double cos( double x, uint16_t depth ) { return sin<double>( Math::PI_Long / 2 - x, depth ); }
+
+float tan( float x, uint16_t depth ) { return sin( x, depth ) / cos( x, depth ); }
+double tan( double x, uint16_t depth ) { return sin( x, depth ) / cos( x, depth ); }
+
+// Inverse trig
+
+template<typename T>
+T asin( T x, uint16_t depth )
+{
+	T aX = fmod( x + 1, 2 ) - 1; // Clamps between 1 and -1
+	T value = aX;
+	T retValue;
+	bool isNegative = ( aX < 0 );
+	value = abs( value );
+
+	// Approximation using Bhaskara I
+
+	retValue = ( Math::TAU / 4 ) * ( 1 - 2 * sqrt( ( 1 - value ) / ( 4 + value ) ) );
+
+	return value;
+}
+
+float asin( float x, uint16_t depth ) { return asin<float>( x, depth ); }
+double asin( double x, uint16_t depth ) { return asin<double>( x, depth ); }
+
+float acos( float x, uint16_t depth ) { return asin<float>( Math::PI / 2 - x, depth ); }
+double acos( double x, uint16_t depth ) { return asin<double>( Math::PI_Long / 2 - x, depth ); }
+
+// float atan( float x, uint16_t depth ) { return asin<float>( x, depth ); }
+// double atan( double x, uint16_t depth ) { return asin<double>( x, depth ); }

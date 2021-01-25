@@ -17,7 +17,9 @@ extern "C" void _start( BootInfo* bootInfo )
 
 	// GlobalRenderer->Print( "Done" );
 
-	GlobalRenderer->Print( to_string( ( uint64_t )( factorial( 8 ) ) ) );
+	// GlobalRenderer->Line( { 25, 25 }, { 250, 25 } );
+
+	GlobalRenderer->Print( to_string( sqrt( 16.0f ) ) );
 
 	// clang-format off
 	while ( true );

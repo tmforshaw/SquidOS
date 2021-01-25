@@ -77,4 +77,20 @@ void BasicRenderer::Endl()
 
 void BasicRenderer::Line( Point p1, Point p2 )
 {
+	int32_t dx = p2.X - p1.X;
+	int32_t dy = p2.Y - p1.Y;
+
+	float angle = ( dx == 0 ) ? degreesToRadians( 45.0f ) : asin( (float)( dy / dx ) );
+
+	float stepX = cos( angle );
+	float stepY = sin( angle );
+
+	float distance = (float)pow( dx, 2 ) + (float)pow( dy, 2 );
+
+	GlobalRenderer->Print( to_string( distance ) );
+
+	for ( uint16_t i = 0; i * i < distance; i++ )
+	{
+		*( (uint32_t*)( (uint32_t*)GlobalRenderer->TargetFramebuffer->BaseAddress + ( int32_t )( p1.X + ( int32_t )( stepX * i ) + ( p1.Y + ( int32_t )( stepY * i ) ) * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine * 4 ) ) ) = Colour;
+	}
 }

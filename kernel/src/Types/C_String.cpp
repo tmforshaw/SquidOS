@@ -35,7 +35,7 @@ const char* to_string( int64_t value )
 	if ( value < 0 )
 	{
 		isNegative = true;
-		value *= -1;
+		value = abs( value );
 		intTo_StringOutput[0] = '-';
 	}
 
@@ -100,8 +100,7 @@ const char* to_string( double value, uint8_t decimalPlaces )
 	char* intPtr = (char*)to_string( (int64_t)value );
 	char* doublePtr = doubleTo_StringOutput;
 
-	if ( value < 0 )
-		value *= -1;
+	value = abs( value );
 
 	while ( *intPtr != '\0' )
 	{
