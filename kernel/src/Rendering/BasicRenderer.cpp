@@ -88,18 +88,19 @@ void BasicRenderer::Line( Point p1, Point p2 )
 	float stepX = cos( angle );
 	float stepY = sin( angle );
 
-	float distanceSqr = pow( dx, 2 ) + pow( dy, 2 );
+	float distance = sqrt( pow( dx, 2 ) + pow( dy, 2 ) );
 
 	float x = (float)p1.X;
 	float y = (float)p1.Y;
 
-	for ( uint16_t i = 0; i * i < (uint16_t)distanceSqr; i++ )
+	for ( uint16_t i = 0; i < (uint16_t)distance; i++ )
 	{
 		x += stepX;
 		y += stepY;
 
-		if ( x + y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine * 4 < GlobalRenderer->TargetFramebuffer->BufferSize )
-			*( (uint32_t*)( (uint32_t*)GlobalRenderer->TargetFramebuffer->BaseAddress + (uint32_t)x + (uint32_t)y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine * 4 ) ) = Colour;
+		// See if it fits within the buffer then draw it
+		if ( x + y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine < GlobalRenderer->TargetFramebuffer->BufferSize )
+			*( (uint32_t*)( (uint32_t*)GlobalRenderer->TargetFramebuffer->BaseAddress + (uint32_t)x + (uint32_t)y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine ) ) = Colour;
 		else
 			break;
 	}

@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 const char* to_string( uint64_t value );
-const char* to_string( int64_t value );
+const char* to_string( int64_t value, bool negative = false );
 
 const char* to_hstring( uint64_t value );
 const char* to_hstring( uint32_t value );

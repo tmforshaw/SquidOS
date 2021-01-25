@@ -86,7 +86,7 @@ void PrepareInterrupts()
 	asm( "sti" ); // Enable maskable interrupts
 }
 
-BasicRenderer r = BasicRenderer( NULL, NULL );
+BasicRenderer r = BasicRenderer( nullptr, nullptr );
 KernelInfo InitialiseKernel( BootInfo* bootInfo )
 {
 	r = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );

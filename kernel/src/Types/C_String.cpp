@@ -30,11 +30,11 @@ const char* to_string( uint64_t value )
 }
 
 char intTo_StringOutput[128];
-const char* to_string( int64_t value )
+const char* to_string( int64_t value, bool negative )
 {
 	bool isNegative = false;
 
-	if ( value < 0 )
+	if ( value < 0 || negative )
 	{
 		isNegative = true;
 		value = abs( value );
@@ -99,7 +99,7 @@ const char* to_string( double value, uint8_t decimalPlaces )
 {
 	if ( decimalPlaces > 20 ) decimalPlaces = 20; // Limit decimal places
 
-	char* intPtr = (char*)to_string( (int64_t)value );
+	char* intPtr = (char*)to_string( (int64_t)value, ( value < 0 ) );
 	char* doublePtr = doubleTo_StringOutput;
 
 	value = abs( value );

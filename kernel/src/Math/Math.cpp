@@ -86,7 +86,7 @@ double max( double v1, double v2 ) { return max<double>( v1, v2 ); }
 template<typename T>
 T floor( T x )
 {
-	return (float)(uint64_t)x;
+	return (float)(int64_t)x;
 }
 
 float floor( float x ) { return floor<float>( x ); }
@@ -97,7 +97,7 @@ double floor( double x ) { return floor<double>( x ); }
 template<typename T>
 T ceil( T x )
 {
-	return (float)(uint64_t)x + 1;
+	return (float)(int64_t)x + 1;
 }
 
 float ceil( float x ) { return floor<float>( x ); }
@@ -222,9 +222,7 @@ T sin( T x )
 	retValue = ( 16.0 * value * ( Math::PI - value ) ) / ( 5.0 * Math::PI_Sqr - 4.0 * value * ( Math::PI - value ) );
 
 	if ( fmod( x, 2 * Math::TAU ) > Math::PI ) // Adjust x to be between 0 and 2PI and return correct value
-	{
-		return -retValue;
-	}
+		retValue *= -1;
 
 	return retValue;
 }

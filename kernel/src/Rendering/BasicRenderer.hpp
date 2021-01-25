@@ -15,7 +15,7 @@ public:
 	PSF1_FONT* PSF1_Font;
 	uint32_t Colour;
 
-	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour );
+	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = GREEN );
 
 	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
 	void Print( const char* str );
