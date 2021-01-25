@@ -1,6 +1,7 @@
 #pragma once
 #include "../Math/Math.hpp"
 #include "../Types/PSF1Font.hpp"
+#include "Colours.hpp"
 #include "FrameBuffer.hpp"
 
 #include <stdint.h>
@@ -14,7 +15,7 @@ public:
 	PSF1_FONT* PSF1_Font;
 	uint32_t Colour;
 
-	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = 0xFF00FFFF );
+	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour );
 
 	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
 	void Print( const char* str );

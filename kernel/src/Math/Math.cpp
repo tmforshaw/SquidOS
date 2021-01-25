@@ -81,15 +81,37 @@ int64_t max( int64_t v1, int64_t v2 ) { return max<int64_t>( v1, v2 ); }
 float max( float v1, float v2 ) { return max<float>( v1, v2 ); }
 double max( double v1, double v2 ) { return max<double>( v1, v2 ); }
 
+// Floor
+
+template<typename T>
+T floor( T x )
+{
+	return (float)(uint64_t)x;
+}
+
+float floor( float x ) { return floor<float>( x ); }
+double floor( double x ) { return floor<double>( x ); }
+
+// Ceil
+
+template<typename T>
+T ceil( T x )
+{
+	return (float)(uint64_t)x + 1;
+}
+
+float ceil( float x ) { return floor<float>( x ); }
+double ceil( double x ) { return floor<double>( x ); }
+
 // Fmod
 
 float fmod( float val, float div )
 {
-	if ( div == 0 ) return 0;
+	if ( div == 0 ) return 0; // #TODO# Math error
 
 	float ratio = val / div;
 
-	return val - div * ( ratio - (uint32_t)ratio );
+	return val - div * floor( ratio );
 }
 
 // Power
@@ -123,17 +145,30 @@ double pow( double val, int32_t p ) { return pow<double, int32_t>( val, p ); }
 template<typename T>
 T sqrt( T x )
 {
-	// A simplified version of the Babylonion method
-	short i;
-	float n;
+	if ( x < 0 ) return 0; // #TODO# FIX THIS IN FUTURE (Add Math Error)
+	if ( x == 0 ) return 0;
 
-	n = x;
-	i = ( 1 << 29 ) + ( i >> 1 ) - ( 1 << 22 );
+	T xhi = x;
+	T xlo = 0;
+	T guess = x / 2;
 
-	n = n + x / n;
-	n = 0.25f * n + x / n;
+	while ( abs( ( guess * guess - x ) / guess ) > 0.00001 ) // Get the relative error
+	{
+		// // Getting the mean
+		// if ( guess * guess > x )
+		// 	xhi = guess;
+		// else
+		// 	xlo = guess;
 
-	return n;
+		// guess = ( xhi + xlo ) / 2; // Get the mean
+
+		// if ( guess == xhi || guess == xlo ) break; // Exit incase of infinite loops
+
+		// Newton's Method
+		guess -= ( guess * guess - x ) / ( 2 * guess );
+	}
+
+	return guess;
 }
 
 float sqrt( float x ) { return sqrt<float>( x ); }
@@ -174,28 +209,39 @@ double degreesToRadians( double deg ) { return deg * Math::PI_Long / 180; }
 // Trig
 
 template<typename T>
-T sin( T x, uint16_t depth )
+T sin( T x )
 {
-	T value = fmod( x + 2 * Math::PI, 4 * Math::PI ) - 2 * Math::PI; // Clamp between -2pi and 2pi
+	T value = fmod( x, Math::PI ); // Clamp between 0 and pi
+	T retValue;
 
-	// Using a quadratic graph
+	// // Using a quadratic graph
+	// retValue = -0.417698 * value * value + 1.312236 * value - 0.050465;
 
-	return -0.417698 * value * value + 1.312236 * value - 0.050465;
+	// Using more accurate function
+
+	retValue = ( 16.0 * value * ( Math::PI - value ) ) / ( 5.0 * Math::PI_Sqr - 4.0 * value * ( Math::PI - value ) );
+
+	if ( fmod( x, 2 * Math::TAU ) > Math::PI ) // Adjust x to be between 0 and 2PI and return correct value
+	{
+		return -retValue;
+	}
+
+	return retValue;
 }
 
-float sin( float x, uint16_t depth ) { return sin<float>( x, depth ); }
-double sin( double x, uint16_t depth ) { return sin<double>( x, depth ); }
+float sin( float x ) { return sin<float>( x ); }
+double sin( double x ) { return sin<double>( x ); }
 
-float cos( float x, uint16_t depth ) { return sin<float>( Math::PI / 2 - x, depth ); }
-double cos( double x, uint16_t depth ) { return sin<double>( Math::PI_Long / 2 - x, depth ); }
+float cos( float x ) { return sin<float>( Math::PI / 2 - x ); }
+double cos( double x ) { return sin<double>( Math::PI_Long / 2 - x ); }
 
-float tan( float x, uint16_t depth ) { return sin( x, depth ) / cos( x, depth ); }
-double tan( double x, uint16_t depth ) { return sin( x, depth ) / cos( x, depth ); }
+float tan( float x ) { return sin( x ) / cos( x ); }
+double tan( double x ) { return sin( x ) / cos( x ); }
 
 // Inverse trig
 
 template<typename T>
-T asin( T x, uint16_t depth )
+T asin( T x )
 {
 	T aX = fmod( x + 1, 2 ) - 1; // Clamps between 1 and -1
 	T value = aX;
@@ -210,11 +256,39 @@ T asin( T x, uint16_t depth )
 	return value;
 }
 
-float asin( float x, uint16_t depth ) { return asin<float>( x, depth ); }
-double asin( double x, uint16_t depth ) { return asin<double>( x, depth ); }
+float asin( float x ) { return asin<float>( x ); }
+double asin( double x ) { return asin<double>( x ); }
 
-float acos( float x, uint16_t depth ) { return asin<float>( Math::PI / 2 - x, depth ); }
-double acos( double x, uint16_t depth ) { return asin<double>( Math::PI_Long / 2 - x, depth ); }
+float acos( float x ) { return asin<float>( Math::PI / 2 - x ); }
+double acos( double x ) { return asin<double>( Math::PI_Long / 2 - x ); }
 
-// float atan( float x, uint16_t depth ) { return asin<float>( x, depth ); }
-// double atan( double x, uint16_t depth ) { return asin<double>( x, depth ); }
+#define A	   0.0776509570923569
+#define B	   -0.287434475393028
+#define PI_D_4 ( Math::PI / 4 )
+#define C	   ( PI_D_4 - A - B )
+
+template<typename T>
+T atan( T x )
+{
+	T aX = fmod( x + 1, 2 ) - 1; // Clamps between 1 and -1
+
+	double xx = x * x;
+	return ( ( A * xx + B ) * xx + C ) * x;
+}
+
+float atan( float x ) { return atan<float>( x ); }
+double atan( double x ) { return atan<double>( x ); }
+
+template<typename T>
+T atan2( T dy, T dx )
+{
+	if ( dx == 0 )
+	{
+		return ( dy < 0 ) ? Math::PI / 2 : -Math::PI / 2; // #TODO# Should return error if dy == 0
+	}
+
+	return atan( dy / dx );
+}
+
+float atan2( float dx, float dy ) { return atan2<float>( dx, dy ); }
+double atan2( double dx, double dy ) { return atan2<double>( dx, dy ); }

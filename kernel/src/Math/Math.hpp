@@ -65,6 +65,16 @@ int64_t max( int64_t v1, int64_t v2 );
 float max( float v1, float v2 );
 double max( double v1, double v2 );
 
+// Floor
+
+float floor( float x );
+double floor( double x );
+
+// Ceil
+
+float ceil( float x );
+double ceil( double x );
+
 // Fmod
 
 float fmod( float val, float div );
@@ -108,22 +118,25 @@ double degreesToRadians( double deg );
 
 // Trig
 
-float sin( float x, uint16_t depth = 7 );
-double sin( double x, uint16_t depth = 7 );
+float sin( float x );
+double sin( double x );
 
-float cos( float x, uint16_t depth = 7 );
-double cos( double x, uint16_t depth = 7 );
+float cos( float x );
+double cos( double x );
 
-float tan( float x, uint16_t depth = 7 );
-double tan( double x, uint16_t depth = 7 );
+float tan( float x );
+double tan( double x );
 
 // Inverse trig
 
-float asin( float x, uint16_t depth = 7 );
-double asin( double x, uint16_t depth = 7 );
+float asin( float x );
+double asin( double x );
 
-float acos( float x, uint16_t depth = 7 );
-double acos( double x, uint16_t depth = 7 );
+float acos( float x );
+double acos( double x );
 
-// float atan( float x, uint16_t depth = 7 );
-// double atan( double x, uint16_t depth = 7 );
+float atan( float x );
+double atan( double x );
+
+float atan2( float dx, float dy );
+double atan2( double dx, double dy );

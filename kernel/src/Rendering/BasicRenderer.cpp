@@ -47,6 +47,9 @@ void BasicRenderer::Print( const char* str )
 			CursorPosition.Y += PSF1_Font->psf1_Header->charsize;
 		}
 
+		if ( CursorPosition.X + CursorPosition.Y * TargetFramebuffer->PixelsPerScanLine >= TargetFramebuffer->BufferSize )
+			break;
+
 		chr++;
 	}
 }
@@ -77,20 +80,27 @@ void BasicRenderer::Endl()
 
 void BasicRenderer::Line( Point p1, Point p2 )
 {
-	int32_t dx = p2.X - p1.X;
-	int32_t dy = p2.Y - p1.Y;
+	float dx = p2.X - p1.X;
+	float dy = p2.Y - p1.Y;
 
-	float angle = ( dx == 0 ) ? degreesToRadians( 45.0f ) : asin( (float)( dy / dx ) );
+	float angle = atan2( dy, dx );
 
 	float stepX = cos( angle );
 	float stepY = sin( angle );
 
-	float distance = (float)pow( dx, 2 ) + (float)pow( dy, 2 );
+	float distanceSqr = pow( dx, 2 ) + pow( dy, 2 );
 
-	GlobalRenderer->Print( to_string( distance ) );
+	float x = (float)p1.X;
+	float y = (float)p1.Y;
 
-	for ( uint16_t i = 0; i * i < distance; i++ )
+	for ( uint16_t i = 0; i * i < (uint16_t)distanceSqr; i++ )
 	{
-		*( (uint32_t*)( (uint32_t*)GlobalRenderer->TargetFramebuffer->BaseAddress + ( int32_t )( p1.X + ( int32_t )( stepX * i ) + ( p1.Y + ( int32_t )( stepY * i ) ) * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine * 4 ) ) ) = Colour;
+		x += stepX;
+		y += stepY;
+
+		if ( x + y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine * 4 < GlobalRenderer->TargetFramebuffer->BufferSize )
+			*( (uint32_t*)( (uint32_t*)GlobalRenderer->TargetFramebuffer->BaseAddress + (uint32_t)x + (uint32_t)y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine * 4 ) ) = Colour;
+		else
+			break;
 	}
 }

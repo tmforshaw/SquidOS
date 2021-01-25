@@ -5,21 +5,31 @@ extern "C" void _start( BootInfo* bootInfo )
 	KernelInfo kernelInfo = InitialiseKernel( bootInfo );
 	PageTableManager* PageTableManager = kernelInfo.pageTableManager;
 
+	// GlobalRenderer->Colour = GREEN;
+
+	// const char* message = "This is a test";
+
+	// GlobalRenderer->Colour = RGBA_ToHex( 255, 0, 255, 255 );
+	// GlobalRenderer->Print( message );
+	// GlobalRenderer->Endl();
+	// GlobalRenderer->Colour = RGBA_ToHex( 0, 255, 0, 255 );
+	// GlobalRenderer->Print( message );
+	// GlobalRenderer->Endl();
+	// GlobalRenderer->Colour = RGBA_ToHex( 0, 255, 255, 255 );
+	// GlobalRenderer->Print( message );
+	// GlobalRenderer->Endl();
+	// GlobalRenderer->Colour = RGBA_ToHex( 0, 0, 255, 255 );
+	// GlobalRenderer->Print( message );
+	// GlobalRenderer->Endl();
+
 	GlobalRenderer->Print( "Kernel Initialised Successfully" );
 	GlobalRenderer->Endl();
 
-	// uint32_t y = 20;
+	GlobalRenderer->Line( { GlobalRenderer->TargetFramebuffer->Width / 2, GlobalRenderer->TargetFramebuffer->Height / 2 }, { ( uint32_t )( GlobalRenderer->TargetFramebuffer->Width * 0.9f ), GlobalRenderer->TargetFramebuffer->Height / 2 } );
 
-	// for ( uint32_t x = 0; x < GlobalRenderer->TargetFramebuffer->Width / 2; x++ )
-	// {
-	// 	*(uint32_t*)( (uint32_t*)GlobalRenderer->TargetFramebuffer->BaseAddress + x + y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine ) = GlobalRenderer->Colour;
-	// }
+	// GlobalRenderer->Line( { 25, 50 }, { GlobalRenderer->TargetFramebuffer->Width, 50 } );
 
-	// GlobalRenderer->Print( "Done" );
-
-	// GlobalRenderer->Line( { 25, 25 }, { 250, 25 } );
-
-	GlobalRenderer->Print( to_string( sqrt( 16.0f ) ) );
+	GlobalRenderer->Print( to_string( (uint64_t)GlobalRenderer->TargetFramebuffer->Width ) );
 
 	// clang-format off
 	while ( true );

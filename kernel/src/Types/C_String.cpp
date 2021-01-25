@@ -1,5 +1,7 @@
 #include "C_String.hpp"
 
+#include "../Math/Math.hpp"
+
 char uintTo_StringOutput[128];
 const char* to_string( uint64_t value )
 {
