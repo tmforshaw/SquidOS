@@ -1,6 +1,7 @@
 #pragma once
 #include "../Math/Math.hpp"
 #include "../Types/PSF1Font.hpp"
+#include "../Types/String.hpp"
 #include "Colours.hpp"
 #include "FrameBuffer.hpp"
 
@@ -18,6 +19,7 @@ public:
 
 	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
 	void Print( const char* str );
+	void Print( String str );
 
 	void Clear( uint32_t colour );
 	void Endl( uint16_t amt = 1 );

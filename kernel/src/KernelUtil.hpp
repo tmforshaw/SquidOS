@@ -9,6 +9,7 @@
 #include "Rendering/BasicRenderer.hpp"
 #include "Types/Bitmap.hpp"
 #include "Types/C_String.hpp"
+#include "Types/String.hpp"
 
 struct BootInfo
 {

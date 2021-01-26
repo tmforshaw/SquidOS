@@ -11,6 +11,8 @@ extern "C" void _start( BootInfo* bootInfo )
 	PrintMemoryDebug();
 	GlobalRenderer->Endl();
 
+	GlobalRenderer->Print( test );
+
 	GlobalRenderer->Rect( { 250, 250 }, 150, 150 );
 	GlobalRenderer->Rect( { 250, 425 }, 150, 150, false );
 	GlobalRenderer->Circle( { 500, 325 }, 75, false );

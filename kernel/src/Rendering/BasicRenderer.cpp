@@ -55,6 +55,11 @@ void BasicRenderer::Print( const char* str )
 	}
 }
 
+void BasicRenderer::Print( String str )
+{
+	Print( str.GetCstr() );
+}
+
 void BasicRenderer::Clear( uint32_t colour )
 {
 	uint64_t fbBase = (uint64_t)TargetFramebuffer->BaseAddress;
@@ -102,25 +107,6 @@ void BasicRenderer::Line( Point p1, Point p2 )
 
 	float x = (float)p1.X;
 	float y = (float)p1.Y;
-
-	// GlobalRenderer->Print( "Delta x: " );
-	// GlobalRenderer->Print( to_string( dx, 5 ) );
-	// GlobalRenderer->Endl();
-	// GlobalRenderer->Print( "Delta y: " );
-	// GlobalRenderer->Print( to_string( dy, 5 ) );
-	// GlobalRenderer->Endl();
-	// GlobalRenderer->Print( "Angle (Deg): " );
-	// GlobalRenderer->Print( to_string( radiansToDegrees( angle ), 5 ) );
-	// GlobalRenderer->Endl();
-	// GlobalRenderer->Print( "Distance: " );
-	// GlobalRenderer->Print( to_string( distance, 5 ) );
-	// GlobalRenderer->Endl();
-	// GlobalRenderer->Print( "Cos(angle): " );
-	// GlobalRenderer->Print( to_string( stepX, 5 ) );
-	// GlobalRenderer->Endl();
-	// GlobalRenderer->Print( "Sin(angle): " );
-	// GlobalRenderer->Print( to_string( stepY, 5 ) );
-	// GlobalRenderer->Endl();
 
 	uint32_t pixPtr;
 
