@@ -1,5 +1,7 @@
 #include "Keyboard.hpp"
 
+#include "../Interfaces/TextInterface.hpp"
+
 static bool isLeftShiftPressed;
 static bool isRightShiftPressed;
 
@@ -24,15 +26,15 @@ void HandleKeyboard( uint8_t scancode )
 		return;
 
 	case Enter:
-		GlobalRenderer->Endl();
+		SelectedTextUI->SendEnter();
 		return;
 
 	case Spacebar:
-		GlobalRenderer->PutChar( ' ' );
+		SelectedTextUI->SendChar( ' ' );
 		return;
 
 	case Backspace:
-		GlobalRenderer->ClearChar();
+		SelectedTextUI->SendBackspace();
 		return;
 
 	default:
@@ -42,5 +44,5 @@ void HandleKeyboard( uint8_t scancode )
 	char ascii = QWERTY_Keyboard::Translate( scancode, isLeftShiftPressed | isRightShiftPressed );
 
 	if ( ascii != 0 )
-		GlobalRenderer->PutChar( ascii );
+		SelectedTextUI->SendChar( ascii );
 }

@@ -14,21 +14,26 @@ public:
 	PSF1_FONT* PSF1_Font;
 	uint32_t Colour;
 	uint32_t ClearColour;
+	uint32_t ColourStack; // Used to temporarily hold colours
 
 	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = GREEN, uint32_t p_ClearColour = BLACK );
 
 	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
-	void PutChar( char chr );
 	void Print( const char* str );
 	void Print( String str );
 
 	void Clear( uint32_t colour = BLACK );
-	void ClearChar( uint32_t colour = BLACK );
+	void ClearChar( uint16_t xOff, uint16_t yOff, uint32_t colour = BLACK );
 	void Endl( uint16_t amt = 1 );
+
+	// Colour Stuff
+
+	void PushColour( uint32_t p_Colour );
+	void PopColour();
 
 	// Drawing
 
-	void PutPix( Point p, uint32_t col = DEFAULT_COLOUR );
+	void PutPix( Point p );
 
 	void Line( Point p1, Point p2 );
 

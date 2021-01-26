@@ -1,5 +1,6 @@
 #include "BasicRenderer.hpp"
 
+#include "../Interfaces/TextInterface.hpp"
 #include "../Types/C_String.hpp"
 
 BasicRenderer* GlobalRenderer;
@@ -12,6 +13,7 @@ BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF
 	PSF1_Font = p_PSF1_Font;
 	Colour = p_Colour;
 	ClearColour = p_ClearColour;
+	ColourStack = p_Colour;
 }
 
 void BasicRenderer::PutChar( char chr, uint32_t xOff, uint32_t yOff )
@@ -22,7 +24,7 @@ void BasicRenderer::PutChar( char chr, uint32_t xOff, uint32_t yOff )
 	// Select the bit in the bitmap
 	for ( unsigned long y = yOff; y < yOff + PSF1_Font->psf1_Header->charsize; y++ )
 	{
-		for ( unsigned long x = xOff; x < xOff + 8; x++ )
+		for ( unsigned long x = xOff; x < xOff + PSF1_FontWidth; x++ )
 		{
 			if ( ( *fontPtr & ( 0b10000000 >> ( x - xOff ) ) ) > 0 ) // Select the bit that we need
 			{
@@ -30,18 +32,6 @@ void BasicRenderer::PutChar( char chr, uint32_t xOff, uint32_t yOff )
 			}
 		}
 		fontPtr++;
-	}
-}
-
-void BasicRenderer::PutChar( char chr )
-{
-	PutChar( chr, CursorPosition.X, CursorPosition.Y );
-	CursorPosition.X += 8;
-
-	if ( CursorPosition.X + 8 >= TargetFramebuffer->Width )
-	{
-		CursorPosition.X = 0;
-		CursorPosition.Y += PSF1_Font->psf1_Header->charsize;
 	}
 }
 
@@ -56,9 +46,9 @@ void BasicRenderer::Print( const char* str )
 			break;
 
 		PutChar( *chr, CursorPosition.X, CursorPosition.Y );
-		CursorPosition.X += 8;
+		CursorPosition.X += PSF1_FontWidth;
 
-		if ( CursorPosition.X + 8 > TargetFramebuffer->Width )
+		if ( CursorPosition.X + PSF1_FontWidth > TargetFramebuffer->Width )
 		{
 			CursorPosition.X = 0;
 			CursorPosition.Y += PSF1_Font->psf1_Header->charsize;
@@ -90,27 +80,11 @@ void BasicRenderer::Clear( uint32_t colour )
 	GlobalRenderer->CursorPosition = { 0, 0 }; // Reset CursorPosition
 }
 
-void BasicRenderer::ClearChar( uint32_t colour )
+void BasicRenderer::ClearChar( uint16_t xOff, uint16_t yOff, uint32_t colour )
 {
-	if ( CursorPosition.X < 8 )
-	{
-		CursorPosition.X = TargetFramebuffer->Width;
-
-		// Print( to_string( (uint64_t)TargetFramebuffer->Width ) );
-
-		// if ( CursorPosition.Y >= PSF1_Font->psf1_Header->charsize )
-		// 	CursorPosition.Y -= PSF1_Font->psf1_Header->charsize;
-		// else
-		// 	CursorPosition.Y = 0;
-	}
-	else
-		CursorPosition.X -= 8;
-
-	for ( unsigned long y = CursorPosition.Y; y < CursorPosition.Y + PSF1_Font->psf1_Header->charsize; y++ )
-		for ( unsigned long x = CursorPosition.X; x < CursorPosition.X + 8; x++ )
-			*(uint32_t*)( (uint32_t*)TargetFramebuffer->BaseAddress + x + y * TargetFramebuffer->PixelsPerScanLine ) = ClearColour;
-
-	// #TODO# Refactor this
+	for ( unsigned long y = yOff; y < yOff + PSF1_Font->psf1_Header->charsize; y++ )
+		for ( unsigned long x = xOff; x < xOff + PSF1_FontWidth; x++ )
+			*(uint32_t*)( (uint32_t*)TargetFramebuffer->BaseAddress + x + y * TargetFramebuffer->PixelsPerScanLine ) = colour;
 }
 
 void BasicRenderer::Endl( uint16_t amt )
@@ -119,14 +93,24 @@ void BasicRenderer::Endl( uint16_t amt )
 		CursorPosition = { 0, CursorPosition.Y + PSF1_Font->psf1_Header->charsize };
 }
 
+// Colour Stuff
+
+void BasicRenderer::PushColour( uint32_t p_Colour )
+{
+	ColourStack = Colour;
+	Colour = p_Colour;
+}
+
+void BasicRenderer::PopColour() { Colour = ColourStack; }
+
 // Drawing
 
-void BasicRenderer::PutPix( Point p, uint32_t col )
+void BasicRenderer::PutPix( Point p )
 {
 	uint32_t pixPtr = p.X + p.Y * TargetFramebuffer->PixelsPerScanLine;
 
 	if ( pixPtr < TargetFramebuffer->BufferSize && pixPtr >= 0 )
-		*( (uint32_t*)TargetFramebuffer->BaseAddress + pixPtr ) = col;
+		*( (uint32_t*)TargetFramebuffer->BaseAddress + pixPtr ) = Colour;
 }
 
 void BasicRenderer::Line( Point p1, Point p2 )
@@ -167,13 +151,8 @@ void BasicRenderer::Rect( Point pos, uint16_t width, uint16_t height, bool fill 
 	{
 		// Use scan lines to fill the square
 		for ( uint16_t y = pos.Y; y < pos.Y + height; y++ ) // #TODO# Optimise this code
-		{
 			for ( uint16_t x = pos.X; x < pos.X + width; x++ )
-			{
-				// *( (uint32_t*)TargetFramebuffer->BaseAddress + x + y * TargetFramebuffer->PixelsPerScanLine ) = Colour;
 				PutPix( { x, y } );
-			}
-		}
 	}
 	else
 	{

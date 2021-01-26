@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Interfaces/TextInterface.hpp"
 #include "Memory/EFI_Memory.hpp"
 #include "Memory/Memory.hpp"
 #include "Paging/PageFrameAllocator.hpp"

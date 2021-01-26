@@ -30,11 +30,18 @@ struct Point
 	uint32_t Y;
 };
 
+struct Point16
+{
+	uint16_t X;
+	uint16_t Y;
+};
+
 // Functions
 
 // Abs
 
-int8_t abs( int8_t x );
+int8_t
+abs( int8_t x );
 int16_t abs( int16_t x );
 int32_t abs( int32_t x );
 int64_t abs( int64_t x );

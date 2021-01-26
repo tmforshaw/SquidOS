@@ -26,6 +26,11 @@ OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 OBJS += $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%_asm.o, $(ASMSRC))
 DIRS = $(wildcard $(SRCDIR)/*)
 
+clearobj:
+	@echo !--- Clearing $(OBJDIR) Folder ---!
+	@rm -r $(OBJDIR)
+	@mkdir -p $(OBJDIR)
+
 kernel: $(OBJS) link
 	@echo !--- Compiled and Linked ---!
 
