@@ -80,6 +80,14 @@ void BasicRenderer::Endl( uint16_t amt )
 
 // Drawing
 
+void BasicRenderer::PutPix( Point p, uint32_t col )
+{
+	uint32_t pixPtr = p.X + p.Y * TargetFramebuffer->PixelsPerScanLine;
+
+	if ( pixPtr < TargetFramebuffer->BufferSize && pixPtr >= 0 )
+		*( (uint32_t*)TargetFramebuffer->BaseAddress + pixPtr ) = col;
+}
+
 void BasicRenderer::Line( Point p1, Point p2 )
 {
 	float dx = (float)p2.X - (float)p1.X;
@@ -136,11 +144,12 @@ void BasicRenderer::Rect( Point pos, uint16_t width, uint16_t height, bool fill 
 	if ( fill )
 	{
 		// Use scan lines to fill the square
-		for ( uint16_t y = pos.Y; y < pos.Y + height; y++ )
+		for ( uint16_t y = pos.Y; y < pos.Y + height; y++ ) // #TODO# Optimise this code
 		{
 			for ( uint16_t x = pos.X; x < pos.X + width; x++ )
 			{
-				*( (uint32_t*)TargetFramebuffer->BaseAddress + x + y * TargetFramebuffer->PixelsPerScanLine ) = Colour;
+				// *( (uint32_t*)TargetFramebuffer->BaseAddress + x + y * TargetFramebuffer->PixelsPerScanLine ) = Colour;
+				PutPix( { x, y } );
 			}
 		}
 	}
@@ -158,10 +167,58 @@ void BasicRenderer::Circle( Point pos, uint16_t r, bool fill )
 {
 	if ( fill )
 	{
-		// Filling the circle
+		// Filling the circle (Inefficient algorithm)
+
+		int16_t r2 = r * r;
+		int16_t area = r2 << 2;
+		int16_t rr = r << 1;
+
+		for ( int16_t i = 0; i < area; i++ )
+		{
+			int16_t tx = ( i % rr ) - r;
+			int16_t ty = ( i / rr ) - r;
+
+			if ( tx * tx + ty * ty <= r2 )
+				PutPix( { ( uint32_t )( pos.X + tx ), ( uint32_t )( pos.Y + ty ) } );
+		}
 	}
 	else
 	{
 		// Draw the outer edges of the circle
+
+		// Bresenham circle drawing algorithm
+		int16_t x = 0, y = r;
+		int16_t decisionParam = 3 - 2 * r;
+
+		DisplayBresenham( pos, x, y );
+
+		while ( y > x )
+		{
+			x++;
+
+			if ( decisionParam > 0 )
+			{
+				y--;
+				decisionParam += 4 * ( x - y ) + 10;
+			}
+			else
+				decisionParam += 4 * x + 6;
+
+			DisplayBresenham( pos, x, y );
+		}
 	}
+}
+
+void BasicRenderer::DisplayBresenham( Point pos, int16_t x, int16_t y )
+{
+	// Mirror the pixel to all 8 octants
+
+	PutPix( { ( uint32_t )( pos.X + x ), ( uint32_t )( pos.Y + y ) } );
+	PutPix( { ( uint32_t )( pos.X - x ), ( uint32_t )( pos.Y + y ) } );
+	PutPix( { ( uint32_t )( pos.X + x ), ( uint32_t )( pos.Y - y ) } );
+	PutPix( { ( uint32_t )( pos.X - x ), ( uint32_t )( pos.Y - y ) } );
+	PutPix( { ( uint32_t )( pos.X + y ), ( uint32_t )( pos.Y + x ) } );
+	PutPix( { ( uint32_t )( pos.X - y ), ( uint32_t )( pos.Y + x ) } );
+	PutPix( { ( uint32_t )( pos.X + y ), ( uint32_t )( pos.Y - x ) } );
+	PutPix( { ( uint32_t )( pos.X - y ), ( uint32_t )( pos.Y - x ) } );
 }

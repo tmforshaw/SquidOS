@@ -8,7 +8,6 @@
 
 class BasicRenderer
 {
-private:
 public:
 	Point CursorPosition;
 	Framebuffer* TargetFramebuffer;
@@ -25,10 +24,15 @@ public:
 
 	// Drawing
 
+	void PutPix( Point p, uint32_t col = DEFAULT_COLOUR );
+
 	void Line( Point p1, Point p2 );
 
 	void Rect( Point pos, uint16_t width, uint16_t height, bool fill = true );
 	void Circle( Point pos, uint16_t r, bool fill = true );
+
+private:
+	void DisplayBresenham( Point pos, int16_t x, int16_t y ); // Hide so it cannot be used outside of class
 };
 
 extern BasicRenderer* GlobalRenderer;
