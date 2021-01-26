@@ -12,8 +12,8 @@ uint64_t IDT_DescEntry::GetOffset()
 	uint64_t offset = 0;
 
 	offset |= (uint64_t)Offset0;
-	offset |= ( uint64_t )( Offset1 << 16 );
-	offset |= ( uint64_t )( Offset2 << 32 );
+	offset |= ( uint64_t )( Offset1 ) << 16;
+	offset |= ( uint64_t )( Offset2 ) << 32;
 
 	return offset;
 }

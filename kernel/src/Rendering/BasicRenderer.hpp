@@ -14,14 +14,17 @@ public:
 	Framebuffer* TargetFramebuffer;
 	PSF1_FONT* PSF1_Font;
 	uint32_t Colour;
+	uint32_t ClearColour;
 
-	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = GREEN );
+	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = GREEN, uint32_t p_ClearColour = BLACK );
 
 	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
+	void PutChar( char chr );
 	void Print( const char* str );
 	void Print( String str );
 
-	void Clear( uint32_t colour );
+	void Clear( uint32_t colour = BLACK );
+	void ClearChar( uint32_t colour = BLACK );
 	void Endl( uint16_t amt = 1 );
 
 	// Drawing

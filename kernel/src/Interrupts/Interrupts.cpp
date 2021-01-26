@@ -1,41 +1,37 @@
 #include "Interrupts.hpp"
 
 #include "../IO/IO.hpp"
+#include "../IO/Keyboard.hpp"
 #include "../Panic/Panic.hpp"
 #include "../Rendering/BasicRenderer.hpp"
 
+// clang-format off
 __attribute__( ( interrupt ) ) void PageFault_Handler( struct interrupt_frame* frame )
 {
 	Panic( "Page Fault Detected." );
-
-	// clang-format off
-    while(true); // Halt execution
-	// clang-format on
+	while ( true ); // Halt execution
 }
 
 __attribute__( ( interrupt ) ) void DoubleFault_Handler( struct interrupt_frame* frame )
 {
 	Panic( "Double Fault Detected." );
-
-	// clang-format off
     while(true); // Halt execution
-	// clang-format on
 }
 
 __attribute__( ( interrupt ) ) void GPFault_Handler( struct interrupt_frame* frame )
 {
 	Panic( "General Protection Fault Detected." );
-
-	// clang-format off
     while(true); // Halt execution
-	// clang-format on
 }
+
+// clang-format on
 
 __attribute__( ( interrupt ) ) void KeyboardInt_Handler( struct interrupt_frame* frame )
 {
-	GlobalRenderer->Print( "Pressed " );
-
 	uint8_t scancode = inb( 0x60 ); // Port for PS2 keyboard
+
+	HandleKeyboard( scancode );
+
 	PIC_EndMaster();
 }
 

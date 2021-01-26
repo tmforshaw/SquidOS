@@ -4,13 +4,14 @@
 
 BasicRenderer* GlobalRenderer;
 
-BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour )
+BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour, uint32_t p_ClearColour )
 {
 	CursorPosition = { 0, 0 };
 
 	TargetFramebuffer = p_TargetFramebuffer;
 	PSF1_Font = p_PSF1_Font;
 	Colour = p_Colour;
+	ClearColour = p_ClearColour;
 }
 
 void BasicRenderer::PutChar( char chr, uint32_t xOff, uint32_t yOff )
@@ -25,10 +26,22 @@ void BasicRenderer::PutChar( char chr, uint32_t xOff, uint32_t yOff )
 		{
 			if ( ( *fontPtr & ( 0b10000000 >> ( x - xOff ) ) ) > 0 ) // Select the bit that we need
 			{
-				*(uint32_t*)( pixPtr + x + ( y * TargetFramebuffer->PixelsPerScanLine ) ) = Colour; // Set colour
+				*(uint32_t*)( pixPtr + x + y * TargetFramebuffer->PixelsPerScanLine ) = Colour; // Set colour
 			}
 		}
 		fontPtr++;
+	}
+}
+
+void BasicRenderer::PutChar( char chr )
+{
+	PutChar( chr, CursorPosition.X, CursorPosition.Y );
+	CursorPosition.X += 8;
+
+	if ( CursorPosition.X + 8 >= TargetFramebuffer->Width )
+	{
+		CursorPosition.X = 0;
+		CursorPosition.Y += PSF1_Font->psf1_Header->charsize;
 	}
 }
 
@@ -75,6 +88,29 @@ void BasicRenderer::Clear( uint32_t colour )
 	}
 
 	GlobalRenderer->CursorPosition = { 0, 0 }; // Reset CursorPosition
+}
+
+void BasicRenderer::ClearChar( uint32_t colour )
+{
+	if ( CursorPosition.X < 8 )
+	{
+		CursorPosition.X = TargetFramebuffer->Width;
+
+		// Print( to_string( (uint64_t)TargetFramebuffer->Width ) );
+
+		// if ( CursorPosition.Y >= PSF1_Font->psf1_Header->charsize )
+		// 	CursorPosition.Y -= PSF1_Font->psf1_Header->charsize;
+		// else
+		// 	CursorPosition.Y = 0;
+	}
+	else
+		CursorPosition.X -= 8;
+
+	for ( unsigned long y = CursorPosition.Y; y < CursorPosition.Y + PSF1_Font->psf1_Header->charsize; y++ )
+		for ( unsigned long x = CursorPosition.X; x < CursorPosition.X + 8; x++ )
+			*(uint32_t*)( (uint32_t*)TargetFramebuffer->BaseAddress + x + y * TargetFramebuffer->PixelsPerScanLine ) = ClearColour;
+
+	// #TODO# Refactor this
 }
 
 void BasicRenderer::Endl( uint16_t amt )
