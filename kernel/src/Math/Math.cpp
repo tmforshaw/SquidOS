@@ -89,7 +89,7 @@ double max( double v1, double v2 ) { return max<double>( v1, v2 ); }
 template<typename T> // #TODO# This is broken somehow, idk how, the input is fucked if it comes from the fmod function
 T floor( T x )
 {
-	return ( T )(int32_t)x;
+	return ( T )( (int32_t)x - ( x < 0 ? 1 : 0 ) ); // Minus one if it is negative
 }
 
 float floor( float x ) { return floor<float>( x ); }
@@ -100,7 +100,7 @@ double floor( double x ) { return floor<double>( x ); }
 template<typename T>
 T ceil( T x )
 {
-	return ( T )(int32_t)x + 1;
+	return 1 + floor( x );
 }
 
 float ceil( float x ) { return floor<float>( x ); }
@@ -114,7 +114,7 @@ float fmod( float val, float div )
 
 	const float ratio = val / div;
 
-	return val - div * (float)( uint32_t )( ratio ); // #TODO# Used to use floor but that is broke for some reason
+	return abs( val - div * floor( ratio ) );
 }
 
 // Power
@@ -270,13 +270,6 @@ double atan( double x ) { return atan<double>( x ); }
 template<typename T>
 T atan2( T dy, T dx )
 {
-	// if ( dx == 0 )
-	// {
-	// 	return ( dy > 0 ) ? Math::PI / 2 : -Math::PI / 2; // #TODO# Should return error if dy == 0
-	// }
-
-	// return atan( dy / dx );
-
 	if ( dx != 0.0f )
 	{
 		if ( abs( dx ) > abs( dy ) )

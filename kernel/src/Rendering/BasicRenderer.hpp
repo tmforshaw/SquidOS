@@ -27,7 +27,8 @@ public:
 
 	void Line( Point p1, Point p2 );
 
-	void Rect( Point pos, uint16_t width, uint16_t height );
+	void Rect( Point pos, uint16_t width, uint16_t height, bool fill = true );
+	void Circle( Point pos, uint16_t r, bool fill = true );
 };
 
 extern BasicRenderer* GlobalRenderer;

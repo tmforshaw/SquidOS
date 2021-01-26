@@ -104,12 +104,12 @@ void BasicRenderer::Line( Point p1, Point p2 )
 	// GlobalRenderer->Print( "Angle (Deg): " );
 	// GlobalRenderer->Print( to_string( radiansToDegrees( angle ), 5 ) );
 	// GlobalRenderer->Endl();
-	GlobalRenderer->Print( "Distance: " );
-	GlobalRenderer->Print( to_string( distance, 5 ) );
-	GlobalRenderer->Endl();
-	GlobalRenderer->Print( "Cos(angle): " );
-	GlobalRenderer->Print( to_string( stepX, 5 ) );
-	GlobalRenderer->Endl();
+	// GlobalRenderer->Print( "Distance: " );
+	// GlobalRenderer->Print( to_string( distance, 5 ) );
+	// GlobalRenderer->Endl();
+	// GlobalRenderer->Print( "Cos(angle): " );
+	// GlobalRenderer->Print( to_string( stepX, 5 ) );
+	// GlobalRenderer->Endl();
 	// GlobalRenderer->Print( "Sin(angle): " );
 	// GlobalRenderer->Print( to_string( stepY, 5 ) );
 	// GlobalRenderer->Endl();
@@ -131,10 +131,37 @@ void BasicRenderer::Line( Point p1, Point p2 )
 	}
 }
 
-void BasicRenderer::Rect( Point pos, uint16_t width, uint16_t height )
+void BasicRenderer::Rect( Point pos, uint16_t width, uint16_t height, bool fill )
 {
-	Line( { pos.X, pos.Y }, { pos.X + width, pos.Y } );
-	Line( { pos.X + width, pos.Y }, { pos.X + width, pos.Y + height } );
-	Line( { pos.X + width, pos.Y + height }, { pos.X, pos.Y + height } );
-	Line( { pos.X, pos.Y + height }, { pos.X, pos.Y } );
+	if ( fill )
+	{
+		// Use scan lines to fill the square
+		for ( uint16_t y = pos.Y; y < pos.Y + height; y++ )
+		{
+			for ( uint16_t x = pos.X; x < pos.X + width; x++ )
+			{
+				*( (uint32_t*)TargetFramebuffer->BaseAddress + x + y * TargetFramebuffer->PixelsPerScanLine ) = Colour;
+			}
+		}
+	}
+	else
+	{
+		// Just draw the edges
+		Line( { pos.X, pos.Y }, { pos.X + width, pos.Y } );
+		Line( { pos.X + width, pos.Y }, { pos.X + width, pos.Y + height } );
+		Line( { pos.X + width, pos.Y + height }, { pos.X, pos.Y + height } );
+		Line( { pos.X, pos.Y + height }, { pos.X, pos.Y } );
+	}
+}
+
+void BasicRenderer::Circle( Point pos, uint16_t r, bool fill )
+{
+	if ( fill )
+	{
+		// Filling the circle
+	}
+	else
+	{
+		// Draw the outer edges of the circle
+	}
 }

@@ -11,10 +11,7 @@ extern "C" void _start( BootInfo* bootInfo )
 	PrintMemoryDebug();
 	GlobalRenderer->Endl();
 
-	// GlobalRenderer->Rect( { 150, 150 }, 150, 150 );
-
-	GlobalRenderer->Line( { 350, 150 }, { 750, 150 } );
-	GlobalRenderer->Line( { 750, 250 }, { 350, 250 } );
+	GlobalRenderer->Rect( { 250, 250 }, 150, 150 );
 
 	// clang-format off
 	while ( true );
