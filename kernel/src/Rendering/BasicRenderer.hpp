@@ -21,11 +21,13 @@ public:
 	void Print( const char* str );
 
 	void Clear( uint32_t colour );
-	void Endl();
+	void Endl( uint16_t amt = 1 );
 
 	// Drawing
 
 	void Line( Point p1, Point p2 );
+
+	void Rect( Point pos, uint16_t width, uint16_t height );
 };
 
 extern BasicRenderer* GlobalRenderer;

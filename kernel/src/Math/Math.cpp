@@ -2,17 +2,20 @@
 
 // Constants
 
-float Math::PI = 3.14159265f;
-double Math::PI_Long = 3.141592653589793;
+const float Math::PI = 3.14159265f;
+const double Math::PI_Long = 3.141592653589793;
 
-float Math::PI_Sqr = 9.86960440f;
-double Math::PI_Sqr_Long = 9.86960440109; // Could be more accurate
+const float Math::PI_2 = Math::PI / 2;
+const double Math::PI_2_Long = Math::PI_Long / 2;
 
-float Math::TAU = 6.28318530f;
-double Math::TAU_LONG = 6.2831853071795862;
+const float Math::PI_Sqr = Math::PI * Math::PI;
+const double Math::PI_Sqr_Long = Math::PI_Long * Math::PI_Long;
 
-float Math::TAU_Sqr = 39.4784176f;
-double Math::TAU_Sqr_Long = 39.47841760436;
+const float Math::TAU = Math::PI * 2;
+const double Math::TAU_LONG = Math::PI_Long * 2;
+
+const float Math::TAU_Sqr = Math::PI_Sqr * 4;
+const double Math::TAU_Sqr_Long = Math::PI_Sqr_Long * 4;
 
 // Functions
 
@@ -83,10 +86,10 @@ double max( double v1, double v2 ) { return max<double>( v1, v2 ); }
 
 // Floor
 
-template<typename T>
+template<typename T> // #TODO# This is broken somehow, idk how, the input is fucked if it comes from the fmod function
 T floor( T x )
 {
-	return (float)(int64_t)x;
+	return ( T )(int32_t)x;
 }
 
 float floor( float x ) { return floor<float>( x ); }
@@ -97,7 +100,7 @@ double floor( double x ) { return floor<double>( x ); }
 template<typename T>
 T ceil( T x )
 {
-	return (float)(int64_t)x + 1;
+	return ( T )(int32_t)x + 1;
 }
 
 float ceil( float x ) { return floor<float>( x ); }
@@ -109,9 +112,9 @@ float fmod( float val, float div )
 {
 	if ( div == 0 ) return 0; // #TODO# Math error
 
-	float ratio = val / div;
+	const float ratio = val / div;
 
-	return val - div * floor( ratio );
+	return val - div * (float)( uint32_t )( ratio ); // #TODO# Used to use floor but that is broke for some reason
 }
 
 // Power
@@ -148,22 +151,10 @@ T sqrt( T x )
 	if ( x < 0 ) return 0; // #TODO# FIX THIS IN FUTURE (Add Math Error)
 	if ( x == 0 ) return 0;
 
-	T xhi = x;
-	T xlo = 0;
 	T guess = x / 2;
 
 	while ( abs( ( guess * guess - x ) / guess ) > 0.00001 ) // Get the relative error
 	{
-		// // Getting the mean
-		// if ( guess * guess > x )
-		// 	xhi = guess;
-		// else
-		// 	xlo = guess;
-
-		// guess = ( xhi + xlo ) / 2; // Get the mean
-
-		// if ( guess == xhi || guess == xlo ) break; // Exit incase of infinite loops
-
 		// Newton's Method
 		guess -= ( guess * guess - x ) / ( 2 * guess );
 	}
@@ -218,11 +209,10 @@ T sin( T x )
 	// retValue = -0.417698 * value * value + 1.312236 * value - 0.050465;
 
 	// Using more accurate function
-
 	retValue = ( 16.0 * value * ( Math::PI - value ) ) / ( 5.0 * Math::PI_Sqr - 4.0 * value * ( Math::PI - value ) );
 
-	if ( fmod( x, 2 * Math::TAU ) > Math::PI ) // Adjust x to be between 0 and 2PI and return correct value
-		retValue *= -1;
+	if ( fmod( x, Math::TAU ) > Math::PI ) // Adjust x to be between 0 and 2PI and return correct value
+		return -retValue;
 
 	return retValue;
 }
@@ -270,8 +260,8 @@ T atan( T x )
 {
 	T aX = fmod( x + 1, 2 ) - 1; // Clamps between 1 and -1
 
-	double xx = x * x;
-	return ( ( A * xx + B ) * xx + C ) * x;
+	double xx = aX * aX;
+	return ( ( A * xx + B ) * xx + C ) * aX;
 }
 
 float atan( float x ) { return atan<float>( x ); }
@@ -280,12 +270,62 @@ double atan( double x ) { return atan<double>( x ); }
 template<typename T>
 T atan2( T dy, T dx )
 {
-	if ( dx == 0 )
+	// if ( dx == 0 )
+	// {
+	// 	return ( dy > 0 ) ? Math::PI / 2 : -Math::PI / 2; // #TODO# Should return error if dy == 0
+	// }
+
+	// return atan( dy / dx );
+
+	if ( dx != 0.0f )
 	{
-		return ( dy < 0 ) ? Math::PI / 2 : -Math::PI / 2; // #TODO# Should return error if dy == 0
+		if ( abs( dx ) > abs( dy ) )
+		{
+			const float ratio = dy / dx;
+			if ( dx > 0.0 )
+			{
+				// atan2(dy,dx) = atan(dy/dx) if dx > 0
+				return atan( ratio );
+			}
+			else if ( dy >= 0.0 )
+			{
+				// atan2(dy,dx) = atan(dy/dx) + PI if dx < 0, dy >= 0
+				return atan( ratio ) + Math::PI;
+			}
+			else
+			{
+				// atan2(dy,dx) = atan(dy/dx) - PI if dx < 0, dy < 0
+				return atan( ratio ) - Math::PI;
+			}
+		}
+		else // Use property atan(dy/dx) = PI/2 - atan(dx/dy) if |dy/dx| > 1.
+		{
+			const float ratio = dx / dy;
+			if ( dy > 0.0 )
+			{
+				// atan2(dy,dx) = PI/2 - atan(x/y) if |dy/dx| > 1, dy > 0
+				return -atan( ratio ) + Math::PI_2;
+			}
+			else
+			{
+				// atan2(dy,dx) = -PI/2 - atan(x/y) if |dy/dx| > 1, dy < 0
+				return -atan( ratio ) - Math::PI_2;
+			}
+		}
+	}
+	else
+	{
+		if ( dy > 0.0f ) // dx = 0, dy > 0
+		{
+			return Math::PI_2;
+		}
+		else if ( dy < 0.0f ) // dx = 0, dy < 0
+		{
+			return -Math::PI_2;
+		}
 	}
 
-	return atan( dy / dx );
+	return 0.0f; // Throw a math error
 }
 
 float atan2( float dx, float dy ) { return atan2<float>( dx, dy ); }

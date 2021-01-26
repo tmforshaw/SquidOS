@@ -5,17 +5,20 @@
 
 namespace Math
 {
-	extern float PI;
-	extern double PI_Long;
+	extern const float PI;
+	extern const double PI_Long;
 
-	extern float PI_Sqr;
-	extern double PI_Sqr_Long;
+	extern const float PI_2;
+	extern const double PI_2_Long;
 
-	extern float TAU;
-	extern double TAU_LONG;
+	extern const float PI_Sqr;
+	extern const double PI_Sqr_Long;
 
-	extern float TAU_Sqr;
-	extern double TAU_Sqr_Long;
+	extern const float TAU;
+	extern const double TAU_LONG;
+
+	extern const float TAU_Sqr;
+	extern const double TAU_Sqr_Long;
 
 } // namespace Math
 

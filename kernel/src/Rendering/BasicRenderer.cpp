@@ -38,6 +38,10 @@ void BasicRenderer::Print( const char* str )
 
 	while ( *chr != '\0' )
 	{
+		// Out of bounds
+		if ( CursorPosition.X + CursorPosition.Y * TargetFramebuffer->PixelsPerScanLine >= TargetFramebuffer->BufferSize || CursorPosition.X + CursorPosition.Y * TargetFramebuffer->PixelsPerScanLine < 0 )
+			break;
+
 		PutChar( *chr, CursorPosition.X, CursorPosition.Y );
 		CursorPosition.X += 8;
 
@@ -46,9 +50,6 @@ void BasicRenderer::Print( const char* str )
 			CursorPosition.X = 0;
 			CursorPosition.Y += PSF1_Font->psf1_Header->charsize;
 		}
-
-		if ( CursorPosition.X + CursorPosition.Y * TargetFramebuffer->PixelsPerScanLine >= TargetFramebuffer->BufferSize )
-			break;
 
 		chr++;
 	}
@@ -71,17 +72,18 @@ void BasicRenderer::Clear( uint32_t colour )
 	GlobalRenderer->CursorPosition = { 0, 0 }; // Reset CursorPosition
 }
 
-void BasicRenderer::Endl()
+void BasicRenderer::Endl( uint16_t amt )
 {
-	CursorPosition = { 0, CursorPosition.Y + PSF1_Font->psf1_Header->charsize };
+	for ( uint16_t i = 0; i < amt; i++ )
+		CursorPosition = { 0, CursorPosition.Y + PSF1_Font->psf1_Header->charsize };
 }
 
 // Drawing
 
 void BasicRenderer::Line( Point p1, Point p2 )
 {
-	float dx = p2.X - p1.X;
-	float dy = p2.Y - p1.Y;
+	float dx = (float)p2.X - (float)p1.X;
+	float dy = (float)p2.Y - (float)p1.Y;
 
 	float angle = atan2( dy, dx );
 
@@ -93,15 +95,46 @@ void BasicRenderer::Line( Point p1, Point p2 )
 	float x = (float)p1.X;
 	float y = (float)p1.Y;
 
-	for ( uint16_t i = 0; i < (uint16_t)distance; i++ )
+	// GlobalRenderer->Print( "Delta x: " );
+	// GlobalRenderer->Print( to_string( dx, 5 ) );
+	// GlobalRenderer->Endl();
+	// GlobalRenderer->Print( "Delta y: " );
+	// GlobalRenderer->Print( to_string( dy, 5 ) );
+	// GlobalRenderer->Endl();
+	// GlobalRenderer->Print( "Angle (Deg): " );
+	// GlobalRenderer->Print( to_string( radiansToDegrees( angle ), 5 ) );
+	// GlobalRenderer->Endl();
+	GlobalRenderer->Print( "Distance: " );
+	GlobalRenderer->Print( to_string( distance, 5 ) );
+	GlobalRenderer->Endl();
+	GlobalRenderer->Print( "Cos(angle): " );
+	GlobalRenderer->Print( to_string( stepX, 5 ) );
+	GlobalRenderer->Endl();
+	// GlobalRenderer->Print( "Sin(angle): " );
+	// GlobalRenderer->Print( to_string( stepY, 5 ) );
+	// GlobalRenderer->Endl();
+
+	uint32_t pixPtr;
+
+	for ( uint16_t i = 0; i < (int16_t)distance; i++ )
 	{
-		x += stepX;
-		y += stepY;
+		x += cos( angle );
+		y += sin( angle );
+
+		pixPtr = (uint32_t)x + (uint32_t)y * TargetFramebuffer->PixelsPerScanLine;
 
 		// See if it fits within the buffer then draw it
-		if ( x + y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine < GlobalRenderer->TargetFramebuffer->BufferSize )
-			*( (uint32_t*)( (uint32_t*)GlobalRenderer->TargetFramebuffer->BaseAddress + (uint32_t)x + (uint32_t)y * GlobalRenderer->TargetFramebuffer->PixelsPerScanLine ) ) = Colour;
+		if ( pixPtr < TargetFramebuffer->BufferSize && pixPtr >= 0 )
+			*( (uint32_t*)( (uint32_t*)TargetFramebuffer->BaseAddress + pixPtr ) ) = Colour;
 		else
 			break;
 	}
+}
+
+void BasicRenderer::Rect( Point pos, uint16_t width, uint16_t height )
+{
+	Line( { pos.X, pos.Y }, { pos.X + width, pos.Y } );
+	Line( { pos.X + width, pos.Y }, { pos.X + width, pos.Y + height } );
+	Line( { pos.X + width, pos.Y + height }, { pos.X, pos.Y + height } );
+	Line( { pos.X, pos.Y + height }, { pos.X, pos.Y } );
 }
