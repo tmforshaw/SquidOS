@@ -6,7 +6,7 @@
 #include "Interrupts/Interrupts.hpp"
 
 KernelInfo kernelInfo;
-PageTableManager pageTableManager = NULL;
+PageTableManager pageTableManager = nullptr;
 IDTR idtr;
 
 void PrepareMemory( BootInfo* bootInfo )
