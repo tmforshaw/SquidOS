@@ -1,7 +1,7 @@
 #pragma once
-#include <stdint.h>
+#include "../Types/IntDef.hpp"
 
-#define BLACK  0x00000000
+#define BLACK  0xFF000000
 #define WHITE  0xFFFFFFFF
 #define RED	   0xFFFF0000
 #define GREEN  0xFF00FF00
@@ -9,6 +9,8 @@
 #define CYAN   0xFF00FFFF
 #define PINK   0xFFFF00FF
 #define YELLOW 0xFFFFFF00
+
+#define GREY 0xFF414141
 
 #define DEFAULT_COLOUR GREEN
 

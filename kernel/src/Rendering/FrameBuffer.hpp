@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stddef.h>
+#include "../Types/IntDef.hpp" // For size_t
 
 struct Framebuffer
 {

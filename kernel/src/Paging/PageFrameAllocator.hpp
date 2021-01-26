@@ -2,8 +2,7 @@
 #include "../Memory/EFI_Memory.hpp"
 #include "../Memory/Memory.hpp"
 #include "../Types/Bitmap.hpp"
-
-#include <stdint.h>
+#include "../Types/IntDef.hpp"
 
 class PageFrameAllocator
 {

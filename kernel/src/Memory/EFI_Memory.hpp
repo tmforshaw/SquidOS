@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include "../Types/IntDef.hpp"
 
 struct EFI_MEMORY_DESCRIPTOR
 {

@@ -1,10 +1,9 @@
 #include "PageTableManager.hpp"
 
 #include "../Memory/Memory.hpp"
+#include "../Types/IntDef.hpp"
 #include "PageFrameAllocator.hpp"
 #include "PageMapIndexer.hpp"
-
-#include <stdint.h>
 
 PageTableManager::PageTableManager( PageTable* PML4Address )
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include "../Types/IntDef.hpp"
 
 enum PT_Flag
 {

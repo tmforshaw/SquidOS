@@ -1,6 +1,5 @@
 #pragma once
-#include <stddef.h>
-#include <stdint.h>
+#include "../Types/IntDef.hpp"
 
 class Bitmap
 {

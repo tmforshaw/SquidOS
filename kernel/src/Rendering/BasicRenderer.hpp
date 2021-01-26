@@ -1,11 +1,10 @@
 #pragma once
 #include "../Math/Math.hpp"
+#include "../Types/IntDef.hpp"
 #include "../Types/PSF1Font.hpp"
 #include "../Types/String.hpp"
 #include "Colours.hpp"
 #include "FrameBuffer.hpp"
-
-#include <stdint.h>
 
 class BasicRenderer
 {
