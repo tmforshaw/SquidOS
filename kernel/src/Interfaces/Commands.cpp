@@ -20,6 +20,11 @@ CommandManager::CommandManager( Point pos, uint16_t width, uint16_t height )
 	SelectedTextUI = &CommandLineUI; // Select this text box
 }
 
+TextUI CommandManager::GetTextUI()
+{
+	return this->CommandLineUI;
+}
+
 void CommandManager::SendCommand()
 {
 	// Process the commandText here

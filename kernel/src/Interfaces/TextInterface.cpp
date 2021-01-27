@@ -59,11 +59,35 @@ Point TextUI::localToAbsolute( Point position )
 	return { position.X + Pos.X, position.Y + Pos.Y };
 }
 
+#include "../Types/C_String.hpp"
+
 void TextUI::Display()
 {
 	GlobalRenderer->PushColour( BG_Col );
 	GlobalRenderer->Rect( Pos, Width, Height, true );
 	GlobalRenderer->PopColour();
+
+	if ( text.Length() == 0 ) // Return if there is no text
+		return;
+
+	uint16_t i = 0;
+	uint16_t y = MinY();
+	for ( uint16_t x = MinX(); x < MaxX(); x += PSF1_FontWidth )
+	{
+		// Special cases
+		if ( i >= text.Length() )
+			return; // End of text
+
+		if ( text[i] == '\n' ) // New line
+		{
+			y += GlobalRenderer->PSF1_Font->psf1_Header->charsize;
+			x = MinX() - PSF1_FontWidth;
+		}
+		else
+			GlobalRenderer->PutChar( text[i], x, y );
+
+		i++;
+	}
 }
 
 static uint32_t Max_x = 0, Max_y = 0;
@@ -136,20 +160,18 @@ void TextUI::ClearLine()
 	ClearLine( GetRow() );
 }
 
-#include "../Types/C_String.hpp"
-
 // Typing
 
 void TextUI::SendChar( char chr )
 {
-	GlobalRenderer->Print( to_string( AbsoluteCursorPosition.X ) );
-
 	if ( GetCol() >= ColNum() - 1 ) // On the final column
 	{
 		if ( GetRow() < RowNum() - 1 ) // There are lines available
 		{
-			GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
-			// text += chr; // Add to text variable
+			// GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
+			text += chr; // Add to text variable
+
+			text += '\n'; // Add newline to text
 
 			// New line
 			AbsoluteCursorPosition.X = MinX();
@@ -159,18 +181,20 @@ void TextUI::SendChar( char chr )
 		{
 			if ( GetCol() == ColNum() - 1 )
 			{
-				GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
+				// GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
 				SelectedTextUI->AbsoluteCursorPosition.X += PSF1_FontWidth;
-				// text += chr; // Add to text variable
+				text += chr; // Add to text variable
 			}
 		}
 	}
 	else
 	{
-		GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
+		// GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
 		AbsoluteCursorPosition.X += PSF1_FontWidth;
-		// text += chr; // Add to text variable
+		text += chr; // Add to text variable
 	}
+
+	Display();
 }
 
 void TextUI::SendBackspace()
@@ -191,7 +215,7 @@ void TextUI::SendBackspace()
 		SelectedTextUI->AbsoluteCursorPosition.X -= PSF1_FontWidth;
 
 	GlobalRenderer->ClearChar( AbsoluteCursorPosition.X, AbsoluteCursorPosition.Y, BG_Col );
-	text.Split( 0, text.Length() - 2 ); // Remove the last char of text
+	text = text.Split( 0, text.Length() - 2 ); // Remove the last char of text
 }
 
 void TextUI::SendEnter()
@@ -202,9 +226,18 @@ void TextUI::SendEnter()
 		return;
 	}
 
+	GlobalRenderer->Print( text );
+
 	if ( GetRow() < RowNum() - 1 ) // not on final row
 	{
 		AbsoluteCursorPosition.Y += GlobalRenderer->PSF1_Font->psf1_Header->charsize;
 		AbsoluteCursorPosition.X = MinX();
+
+		// Add the amount of spaces necessary
+
+		for ( uint16_t i = 0; i < ColNum() - GetCol(); i++ )
+			text += ' ';
+
+		text += '\n'; // Add newline to text
 	}
 }

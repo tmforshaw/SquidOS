@@ -21,6 +21,7 @@ public:
 	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
 	void Print( const char* str );
 	void Print( String str );
+	void Print( char chr );
 
 	void Clear( uint32_t colour = BLACK );
 	void ClearChar( uint16_t xOff, uint16_t yOff, uint32_t colour = BLACK );

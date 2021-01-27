@@ -110,7 +110,7 @@ KernelInfo InitialiseKernel( BootInfo* bootInfo )
 	GlobalSound = &sou;
 
 	// Initialise Command Line Interface
-	GlobalCommand = CommandManager( { 300, 25 }, 300, 75 ); // Initialise Command Manager
+	GlobalCommand = CommandManager( { 250, 25 }, 300, 75 ); // Initialise Command Manager
 
 	// Clear framebuffer
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize );

@@ -63,6 +63,18 @@ void BasicRenderer::Print( String str )
 	Print( str.GetCstr() );
 }
 
+void BasicRenderer::Print( char chr )
+{
+	PutChar( chr, CursorPosition.X, CursorPosition.Y );
+	CursorPosition.X += PSF1_FontWidth;
+
+	if ( CursorPosition.X + PSF1_FontWidth >= TargetFramebuffer->Width )
+	{
+		CursorPosition.X = 0;
+		CursorPosition.Y += PSF1_Font->psf1_Header->charsize;
+	}
+}
+
 void BasicRenderer::Clear( uint32_t colour )
 {
 	uint64_t fbBase = (uint64_t)TargetFramebuffer->BaseAddress;
