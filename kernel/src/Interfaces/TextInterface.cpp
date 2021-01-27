@@ -240,8 +240,3 @@ void TextUI::SendEnter()
 		text += '\n'; // Add newline to text
 	}
 }
-
-void TextUI::SendF1()
-{
-	GlobalRenderer->Print( text );
-}
