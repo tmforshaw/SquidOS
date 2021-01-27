@@ -215,7 +215,7 @@ void TextUI::SendBackspace()
 		SelectedTextUI->AbsoluteCursorPosition.X -= PSF1_FontWidth;
 
 	GlobalRenderer->ClearChar( AbsoluteCursorPosition.X, AbsoluteCursorPosition.Y, BG_Col );
-	text = text.Split( 0, text.Length() - 2 ); // Remove the last char of text
+	text = text.RemoveLast(); // Remove the last char of text
 }
 
 void TextUI::SendEnter()
@@ -226,18 +226,22 @@ void TextUI::SendEnter()
 		return;
 	}
 
-	GlobalRenderer->Print( text );
+	// GlobalRenderer->Print( text );
 
 	if ( GetRow() < RowNum() - 1 ) // not on final row
 	{
-		AbsoluteCursorPosition.Y += GlobalRenderer->PSF1_Font->psf1_Header->charsize;
-		AbsoluteCursorPosition.X = MinX();
-
-		// Add the amount of spaces necessary
-
+		// Add the amount of spaces necessary to text
 		for ( uint16_t i = 0; i < ColNum() - GetCol(); i++ )
 			text += ' ';
 
+		AbsoluteCursorPosition.Y += GlobalRenderer->PSF1_Font->psf1_Header->charsize;
+		AbsoluteCursorPosition.X = MinX();
+
 		text += '\n'; // Add newline to text
 	}
+}
+
+void TextUI::SendF1()
+{
+	GlobalRenderer->Print( text );
 }

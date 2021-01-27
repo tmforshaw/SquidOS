@@ -42,6 +42,10 @@ void HandleKeyboard( uint8_t scancode )
 		isCapsLockOn = !isCapsLockOn;
 		return;
 
+	case F1:
+		SelectedTextUI->SendF1();
+		return;
+
 	default:
 		break;
 	}

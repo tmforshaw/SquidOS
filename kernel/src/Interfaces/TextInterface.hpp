@@ -57,6 +57,7 @@ public:
 	void SendChar( char chr );
 	void SendBackspace();
 	void SendEnter();
+	void SendF1();
 };
 
 extern TextUI* SelectedTextUI;

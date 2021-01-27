@@ -13,6 +13,8 @@ public:
 	const char* GetCstr();
 	uint16_t Length();
 
+	String RemoveLast();
+
 	String Split( uint16_t start, uint16_t end );
 
 	// Concatenation

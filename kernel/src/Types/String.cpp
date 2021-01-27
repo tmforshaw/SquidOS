@@ -29,6 +29,16 @@ uint16_t String::Length()
 	return i;
 }
 
+String String::RemoveLast()
+{
+	String output = *this;
+
+	if ( Length() > 0 )
+		output[Length() - 1] = '\0';
+
+	return output;
+}
+
 String String::Split( uint16_t start, uint16_t end )
 {
 	String output = "";
