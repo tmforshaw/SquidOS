@@ -36,6 +36,8 @@ String String::Split( uint16_t start, uint16_t end )
 	for ( uint16_t i = start; i <= end; i++ )
 		output += c_str[i];
 
+	output[end + 1] = '\0';
+
 	return output;
 }
 
@@ -70,4 +72,21 @@ String String::operator+( const char& chr )
 	String output = *this;
 	output += chr;
 	return output;
+}
+
+// Assignment
+
+void String::operator=( const char* other )
+{
+	this->c_str = (char*)other;
+}
+
+void String::operator=( String other )
+{
+	this->c_str = (char*)other.GetCstr();
+}
+
+char& String::operator[]( uint16_t index )
+{
+	return this->c_str[index];
 }

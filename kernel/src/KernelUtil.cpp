@@ -88,32 +88,34 @@ void PrepareInterrupts()
 
 BasicRenderer ren = BasicRenderer( nullptr, nullptr );
 SoundManager sou = SoundManager();
-TextUI clt;
 KernelInfo InitialiseKernel( BootInfo* bootInfo )
 {
+	// Initialise Renderer
 	ren = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );
 	GlobalRenderer = &ren;
 
-	GlobalSound = &sou;
-
-	clt = TextUI( { 200, 25 }, 350, 200 );
-	clt.isCommandLine = true;
-	CommandLineUI = &clt;
-	SelectedTextUI = CommandLineUI;
-
+	// Initialise GDT
 	GDT_Descriptor gdtDescriptor;
 	gdtDescriptor.Size = sizeof( GDT ) - 1;
 	gdtDescriptor.Offset = ( uint64_t )( &DefaultGDT );
 	LoadGDT( &gdtDescriptor );
 
+	// Initialise Memory
 	PrepareMemory( bootInfo );
 
-	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize ); // Set frame buffer to black
-
+	// Initialise Interrupts
 	PrepareInterrupts();
 
-	// Display RAM data
+	// Initialise Sound
+	GlobalSound = &sou;
 
+	// Initialise Command Line Interface
+	GlobalCommand = CommandManager( { 300, 25 }, 300, 75 ); // Initialise Command Manager
+
+	// Clear framebuffer
+	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize );
+
+	// Display RAM data
 	GlobalRenderer->Print( "Kernel Initialised Successfully" );
 	GlobalRenderer->Endl( 2 );
 	PrintMemoryDebug();

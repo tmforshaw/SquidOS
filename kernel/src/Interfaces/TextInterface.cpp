@@ -19,6 +19,8 @@ TextUI::TextUI()
 	CentraliserX = 0;
 	CentraliserY = 0;
 
+	text = String( "" );
+
 	AbsoluteCursorPosition = { 0, 0 };
 
 	isCommandLine = false;
@@ -41,6 +43,8 @@ TextUI::TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col, u
 	// Calculate the values needed to centralise the text
 	CentraliserX = ( ( Width - PadLeft - PadRight ) % PSF1_FontWidth ) / 2;									   // Remainder divided by two
 	CentraliserY = ( ( Height - PadTop - PadBottom ) % GlobalRenderer->PSF1_Font->psf1_Header->charsize ) / 2; // Remainder divided by two
+
+	text = String( "" );
 
 	AbsoluteCursorPosition = localToAbsolute( { ( uint16_t )( PadLeft + CentraliserX ), ( uint16_t )( PadTop + CentraliserY ) } );
 
@@ -120,16 +124,32 @@ uint32_t TextUI::GetRow()
 
 // void TextUI::CurDown() {}
 
+void TextUI::ClearLine( uint16_t row )
+{
+	GlobalRenderer->PushColour( BG_Col );
+	GlobalRenderer->Rect( { Pos.X + PadRight + CentraliserX, Pos.Y + PadTop + row * GlobalRenderer->PSF1_Font->psf1_Header->charsize }, Width - PadRight, GlobalRenderer->PSF1_Font->psf1_Header->charsize, true );
+	GlobalRenderer->PopColour();
+}
+
+void TextUI::ClearLine()
+{
+	ClearLine( GetRow() );
+}
+
+#include "../Types/C_String.hpp"
+
 // Typing
 
 void TextUI::SendChar( char chr )
 {
+	GlobalRenderer->Print( to_string( AbsoluteCursorPosition.X ) );
+
 	if ( GetCol() >= ColNum() - 1 ) // On the final column
 	{
 		if ( GetRow() < RowNum() - 1 ) // There are lines available
 		{
 			GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
-			if ( isCommandLine ) GlobalCommand.AddChar( chr ); // Send char to command line
+			// text += chr; // Add to text variable
 
 			// New line
 			AbsoluteCursorPosition.X = MinX();
@@ -141,7 +161,7 @@ void TextUI::SendChar( char chr )
 			{
 				GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
 				SelectedTextUI->AbsoluteCursorPosition.X += PSF1_FontWidth;
-				if ( isCommandLine ) GlobalCommand.AddChar( chr ); // Send char to command line
+				// text += chr; // Add to text variable
 			}
 		}
 	}
@@ -149,7 +169,7 @@ void TextUI::SendChar( char chr )
 	{
 		GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
 		AbsoluteCursorPosition.X += PSF1_FontWidth;
-		if ( isCommandLine ) GlobalCommand.AddChar( chr ); // Send char to command line
+		// text += chr; // Add to text variable
 	}
 }
 
@@ -171,7 +191,7 @@ void TextUI::SendBackspace()
 		SelectedTextUI->AbsoluteCursorPosition.X -= PSF1_FontWidth;
 
 	GlobalRenderer->ClearChar( AbsoluteCursorPosition.X, AbsoluteCursorPosition.Y, BG_Col );
-	if ( isCommandLine ) GlobalCommand.Backspace();
+	text.Split( 0, text.Length() - 2 ); // Remove the last char of text
 }
 
 void TextUI::SendEnter()

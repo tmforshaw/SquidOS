@@ -20,4 +20,9 @@ public:
 	String operator+( const String& other );
 	void operator+=( char chr );
 	String operator+( const char& chr );
+
+	// Assignment
+	void operator=( const char* other );
+	void operator=( String other );
+	char& operator[]( uint16_t i );
 };

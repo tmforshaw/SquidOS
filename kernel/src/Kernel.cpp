@@ -5,7 +5,7 @@ extern "C" void _start( BootInfo* bootInfo )
 	KernelInfo kernelInfo = InitialiseKernel( bootInfo );
 	PageTableManager* PageTableManager = kernelInfo.pageTableManager;
 
-	CommandLineUI->Display();
+	GlobalCommand.Display(); // Show the CLI
 
 	GlobalRenderer->Rect( { 250, 250 }, 150, 150 );
 	GlobalRenderer->Rect( { 250, 425 }, 150, 150, false );

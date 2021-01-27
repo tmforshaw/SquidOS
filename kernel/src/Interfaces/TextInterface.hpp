@@ -3,6 +3,7 @@
 #include "../Rendering/Colours.hpp"
 #include "../Types/IntDef.hpp"
 #include "../Types/PSF1Font.hpp"
+#include "../Types/String.hpp"
 
 class TextUI
 {
@@ -12,6 +13,8 @@ private:
 	uint16_t Height;
 	uint16_t PadLeft, PadRight, PadTop, PadBottom;
 	uint16_t CentraliserX, CentraliserY;
+
+	String text;
 
 	Point localToAbsolute( Point position );
 
@@ -45,6 +48,9 @@ public:
 	// void CurRight();
 	// void CurUp();
 	// void CurDown();
+
+	void ClearLine( uint16_t row );
+	void ClearLine();
 
 	// Typing
 

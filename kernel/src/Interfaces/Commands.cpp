@@ -3,31 +3,29 @@
 #include "../Rendering/BasicRenderer.hpp"
 #include "../Types/String.hpp"
 
-CommandManager GlobalCommand = CommandManager();
-TextUI* CommandLineUI;
-
-String commandText;
+CommandManager GlobalCommand;
 
 CommandManager::CommandManager()
 {
-	commandText = String( "" );
+	CommandLineUI = TextUI( { 0, 0 }, 0, 0 );
+	CommandLineUI.isCommandLine = true;
+	// SelectedTextUI = &CommandLineUI; // Select this text box
 }
 
-void CommandManager::AddChar( char chr )
+CommandManager::CommandManager( Point pos, uint16_t width, uint16_t height )
 {
-	commandText += chr;
-}
+	CommandLineUI = TextUI( pos, width, height );
 
-void CommandManager::Backspace()
-{
-	commandText.Split( 0, commandText.Length() - 2 ); // Remove the last char
+	CommandLineUI.isCommandLine = true;
+	SelectedTextUI = &CommandLineUI; // Select this text box
 }
 
 void CommandManager::SendCommand()
 {
 	// Process the commandText here
+}
 
-	GlobalRenderer->Print( commandText );
-
-	commandText = "";
+void CommandManager::Display()
+{
+	CommandLineUI.Display();
 }
