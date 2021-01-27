@@ -1,8 +1,31 @@
 #include "TextInterface.hpp"
 
+#include "../Interfaces/Commands.hpp"
 #include "../Rendering/BasicRenderer.hpp"
 
 TextUI* SelectedTextUI;
+
+TextUI::TextUI()
+{
+	Pos = { 0, 0 };
+	Width = 0;
+	Height = 0;
+
+	PadLeft = 2;
+	PadRight = 2;
+	PadTop = 2;
+	PadBottom = 2;
+
+	CentraliserX = 0;
+	CentraliserY = 0;
+
+	AbsoluteCursorPosition = { 0, 0 };
+
+	isCommandLine = false;
+
+	BG_Col = DEFAULT_BG_COLOUR;
+	TextCol = DEFAULT_COLOUR;
+}
 
 TextUI::TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col, uint32_t p_TextCol )
 {
@@ -20,6 +43,8 @@ TextUI::TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col, u
 	CentraliserY = ( ( Height - PadTop - PadBottom ) % GlobalRenderer->PSF1_Font->psf1_Header->charsize ) / 2; // Remainder divided by two
 
 	AbsoluteCursorPosition = localToAbsolute( { ( uint16_t )( PadLeft + CentraliserX ), ( uint16_t )( PadTop + CentraliserY ) } );
+
+	isCommandLine = false;
 
 	BG_Col = p_BG_Col;
 	TextCol = p_TextCol;
@@ -104,6 +129,7 @@ void TextUI::SendChar( char chr )
 		if ( GetRow() < RowNum() - 1 ) // There are lines available
 		{
 			GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
+			if ( isCommandLine ) GlobalCommand.AddChar( chr ); // Send char to command line
 
 			// New line
 			AbsoluteCursorPosition.X = MinX();
@@ -115,6 +141,7 @@ void TextUI::SendChar( char chr )
 			{
 				GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
 				SelectedTextUI->AbsoluteCursorPosition.X += PSF1_FontWidth;
+				if ( isCommandLine ) GlobalCommand.AddChar( chr ); // Send char to command line
 			}
 		}
 	}
@@ -122,6 +149,7 @@ void TextUI::SendChar( char chr )
 	{
 		GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
 		AbsoluteCursorPosition.X += PSF1_FontWidth;
+		if ( isCommandLine ) GlobalCommand.AddChar( chr ); // Send char to command line
 	}
 }
 
@@ -143,10 +171,17 @@ void TextUI::SendBackspace()
 		SelectedTextUI->AbsoluteCursorPosition.X -= PSF1_FontWidth;
 
 	GlobalRenderer->ClearChar( AbsoluteCursorPosition.X, AbsoluteCursorPosition.Y, BG_Col );
+	if ( isCommandLine ) GlobalCommand.Backspace();
 }
 
 void TextUI::SendEnter()
 {
+	if ( isCommandLine )
+	{
+		GlobalCommand.SendCommand(); // Send off the command
+		return;
+	}
+
 	if ( GetRow() < RowNum() - 1 ) // not on final row
 	{
 		AbsoluteCursorPosition.Y += GlobalRenderer->PSF1_Font->psf1_Header->charsize;

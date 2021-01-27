@@ -17,10 +17,12 @@ private:
 
 public:
 	Point AbsoluteCursorPosition;
+	bool isCommandLine;
 
 	uint32_t BG_Col;
 	uint32_t TextCol;
 
+	TextUI();
 	TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col = GREY, uint32_t p_TextCol = GREEN );
 
 	void Display();

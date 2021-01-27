@@ -5,9 +5,7 @@ extern "C" void _start( BootInfo* bootInfo )
 	KernelInfo kernelInfo = InitialiseKernel( bootInfo );
 	PageTableManager* PageTableManager = kernelInfo.pageTableManager;
 
-	TextUI text = TextUI( { 300, 25 }, 320, 60, GREY );
-	SelectedTextUI = &text;
-	SelectedTextUI->Display(); // Display text box
+	CommandLineUI->Display();
 
 	GlobalRenderer->Rect( { 250, 250 }, 150, 150 );
 	GlobalRenderer->Rect( { 250, 425 }, 150, 150, false );

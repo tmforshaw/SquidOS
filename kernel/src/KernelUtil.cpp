@@ -86,14 +86,20 @@ void PrepareInterrupts()
 	asm( "sti" ); // Enable maskable interrupts
 }
 
-BasicRenderer r = BasicRenderer( nullptr, nullptr );
-SoundManager s = SoundManager();
+BasicRenderer ren = BasicRenderer( nullptr, nullptr );
+SoundManager sou = SoundManager();
+TextUI clt;
 KernelInfo InitialiseKernel( BootInfo* bootInfo )
 {
-	r = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );
-	GlobalRenderer = &r;
+	ren = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );
+	GlobalRenderer = &ren;
 
-	GlobalSound = &s;
+	GlobalSound = &sou;
+
+	clt = TextUI( { 200, 25 }, 350, 200 );
+	clt.isCommandLine = true;
+	CommandLineUI = &clt;
+	SelectedTextUI = CommandLineUI;
 
 	GDT_Descriptor gdtDescriptor;
 	gdtDescriptor.Size = sizeof( GDT ) - 1;
