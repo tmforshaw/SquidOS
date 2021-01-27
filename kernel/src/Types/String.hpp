@@ -4,7 +4,7 @@
 class String
 {
 private:
-	const char* c_str;
+	char* c_str;
 
 public:
 	String();
@@ -13,7 +13,7 @@ public:
 	const char* GetCstr();
 	uint16_t Length();
 
-	// // Concatenation
-	// void operator+=( const String& other );
-	// String operator+( const String& other );
+	// Concatenation
+	void operator+=( String other );
+	String operator+( const String& other );
 };
