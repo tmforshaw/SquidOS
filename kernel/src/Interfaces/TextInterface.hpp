@@ -37,12 +37,12 @@ public:
 	uint32_t GetCol();
 	uint32_t GetRow();
 
-	// Cursor Movement
+	// // Cursor Movement
 
-	void CurLeft();
-	void CurRight();
-	void CurUp();
-	void CurDown();
+	// void CurLeft();
+	// void CurRight();
+	// void CurUp();
+	// void CurDown();
 
 	// Typing
 

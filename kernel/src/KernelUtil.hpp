@@ -8,6 +8,7 @@
 #include "Paging/PageTableManager.hpp"
 #include "Paging/Paging.hpp"
 #include "Rendering/BasicRenderer.hpp"
+#include "Sound/Sound.hpp"
 #include "Types/Bitmap.hpp"
 #include "Types/C_String.hpp"
 #include "Types/String.hpp"

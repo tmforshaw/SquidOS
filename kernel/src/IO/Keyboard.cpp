@@ -4,6 +4,7 @@
 
 static bool isLeftShiftPressed;
 static bool isRightShiftPressed;
+static bool isCapsLockOn;
 
 void HandleKeyboard( uint8_t scancode )
 {
@@ -37,11 +38,15 @@ void HandleKeyboard( uint8_t scancode )
 		SelectedTextUI->SendBackspace();
 		return;
 
+	case CapsLock:
+		isCapsLockOn = !isCapsLockOn;
+		return;
+
 	default:
 		break;
 	}
 
-	char ascii = QWERTY_Keyboard::Translate( scancode, isLeftShiftPressed | isRightShiftPressed );
+	char ascii = QWERTY_Keyboard::Translate( scancode, isLeftShiftPressed | isRightShiftPressed | isCapsLockOn );
 
 	if ( ascii != 0 )
 		SelectedTextUI->SendChar( ascii );

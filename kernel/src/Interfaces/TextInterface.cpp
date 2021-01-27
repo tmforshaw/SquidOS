@@ -85,19 +85,15 @@ uint32_t TextUI::GetRow()
 	return ( AbsoluteCursorPosition.Y - Pos.Y ) / GlobalRenderer->PSF1_Font->psf1_Header->charsize;
 }
 
-// Cursor Movement
+// // Cursor Movement
 
-void TextUI::CurLeft()
-{
-}
+// void TextUI::CurLeft() {}
 
-void TextUI::CurRight() {}
+// void TextUI::CurRight() {}
 
-void TextUI::CurUp() {}
+// void TextUI::CurUp() {}
 
-void TextUI::CurDown()
-{
-}
+// void TextUI::CurDown() {}
 
 // Typing
 

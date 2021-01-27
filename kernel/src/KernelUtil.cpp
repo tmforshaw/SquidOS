@@ -87,10 +87,13 @@ void PrepareInterrupts()
 }
 
 BasicRenderer r = BasicRenderer( nullptr, nullptr );
+SoundManager s = SoundManager();
 KernelInfo InitialiseKernel( BootInfo* bootInfo )
 {
 	r = BasicRenderer( bootInfo->framebuffer, bootInfo->psf1_font );
 	GlobalRenderer = &r;
+
+	GlobalSound = &s;
 
 	GDT_Descriptor gdtDescriptor;
 	gdtDescriptor.Size = sizeof( GDT ) - 1;
@@ -102,6 +105,13 @@ KernelInfo InitialiseKernel( BootInfo* bootInfo )
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize ); // Set frame buffer to black
 
 	PrepareInterrupts();
+
+	// Display RAM data
+
+	GlobalRenderer->Print( "Kernel Initialised Successfully" );
+	GlobalRenderer->Endl( 2 );
+	PrintMemoryDebug();
+	GlobalRenderer->Endl();
 
 	return kernelInfo;
 }
