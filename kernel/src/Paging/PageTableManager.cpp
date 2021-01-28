@@ -21,7 +21,7 @@ void PageTableManager::MapMemory( void* virtualMemory, void* physicalMemory )
 	if ( !PDE.GetFlag( PT_Flag::Present ) ) // PDP not present
 	{
 		PDP = (PageTable*)GlobalAllocator.RequestPage();
-		memset( PDP, 0, 0x1000 );
+		memset( PDP, 0, PAGE_SIZE );
 		PDE.SetAddress( (uint64_t)PDP >> 12 );
 		PDE.SetFlag( PT_Flag::Present, true ); // Exists now
 		PDE.SetFlag( PT_Flag::ReadWrite, true );
@@ -38,7 +38,7 @@ void PageTableManager::MapMemory( void* virtualMemory, void* physicalMemory )
 	if ( !PDE.GetFlag( PT_Flag::Present ) ) // PD not present
 	{
 		PD = (PageTable*)GlobalAllocator.RequestPage();
-		memset( PD, 0, 0x1000 );
+		memset( PD, 0, PAGE_SIZE );
 		PDE.SetAddress( (uint64_t)PD >> 12 );
 		PDE.SetFlag( PT_Flag::Present, true ); // Exists now
 		PDE.SetFlag( PT_Flag::ReadWrite, true );
@@ -55,7 +55,7 @@ void PageTableManager::MapMemory( void* virtualMemory, void* physicalMemory )
 	if ( !PDE.GetFlag( PT_Flag::Present ) ) // PT not present
 	{
 		PT = (PageTable*)GlobalAllocator.RequestPage();
-		memset( PT, 0, 0x1000 );
+		memset( PT, 0, PAGE_SIZE );
 		PDE.SetAddress( (uint64_t)PT >> 12 );
 		PDE.SetFlag( PT_Flag::Present, true ); // Exists now
 		PDE.SetFlag( PT_Flag::ReadWrite, true );

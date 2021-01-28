@@ -1,6 +1,6 @@
 #include "TextInterface.hpp"
 
-#include "../Interfaces/Commands.hpp"
+#include "../Interfaces/CommandManager.hpp"
 #include "../Rendering/BasicRenderer.hpp"
 
 TextUI* SelectedTextUI;
@@ -241,8 +241,8 @@ void TextUI::SendEnter()
 {
 	if ( isCommandLine )
 	{
-		GlobalCommand.SendCommand( text.GetCstr() ); // Send off the command
-		text[0] = '\0';								 // This is a bit shady but it works
+		GlobalCommand.SendCommand( text ); // Send off the command
+		text[0] = '\0';					   // This is a bit shady but it works
 		AbsoluteCursorPosition.X = MinX();
 
 		Display();

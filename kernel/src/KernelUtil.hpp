@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Interfaces/Commands.hpp"
+#include "Interfaces/CommandManager.hpp"
 #include "Interfaces/TextInterface.hpp"
 #include "Memory/EFI_Memory.hpp"
 #include "Memory/Memory.hpp"

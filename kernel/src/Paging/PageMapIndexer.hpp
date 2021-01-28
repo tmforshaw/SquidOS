@@ -1,6 +1,8 @@
 #pragma once
 #include "../Types/IntDef.hpp"
 
+#define PAGE_SIZE 4096
+
 class PageMapIndexer
 {
 public:

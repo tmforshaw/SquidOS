@@ -1,5 +1,6 @@
 #include "Keyboard.hpp"
 
+#include "../Interfaces/CommandManager.hpp"
 #include "../Interfaces/TextInterface.hpp"
 
 static bool isLeftShiftPressed;
@@ -41,6 +42,12 @@ void HandleKeyboard( uint8_t scancode )
 	case CapsLock:
 		isCapsLockOn = !isCapsLockOn;
 		return;
+
+	case F1:
+		GlobalRenderer->PushColour( PINK );
+		GlobalRenderer->Print( GlobalCommand.GetTextUI().text );
+		GlobalRenderer->Endl();
+		GlobalRenderer->PopColour();
 
 	default:
 		break;

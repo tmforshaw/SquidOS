@@ -15,7 +15,9 @@ public:
 
 	String RemoveLast();
 	void Empty();
-	String Split( uint16_t start, uint16_t end );
+	String GetWord( uint16_t index );
+	String GetAfterWord( uint16_t index );
+	String Splice( uint16_t start, uint16_t end );
 
 	// Concatenation
 	void operator+=( String other );
@@ -27,4 +29,8 @@ public:
 	void operator=( const char* other );
 	void operator=( String other );
 	char& operator[]( uint16_t i );
+
+	// Boolean
+	bool operator==( String other );
+	bool operator==( const char* other );
 };

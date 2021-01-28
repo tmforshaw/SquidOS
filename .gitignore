@@ -1,2 +1,4 @@
 README.md
 kernel/lib
+kernel/lib/**
+kernel/bin/Kernel.elf
