@@ -111,6 +111,7 @@ KernelInfo InitialiseKernel( BootInfo* bootInfo )
 
 	// Initialise Command Line Interface
 	GlobalCommand = CommandManager( { 250, 25 }, 300, 75 ); // Initialise Command Manager
+	SelectedTextUI = &GlobalCommand.GetTextUI();			// Select this text box
 
 	// Clear framebuffer
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize );

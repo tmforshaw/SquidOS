@@ -14,7 +14,7 @@ public:
 	uint16_t Length();
 
 	String RemoveLast();
-
+	void Empty();
 	String Split( uint16_t start, uint16_t end );
 
 	// Concatenation

@@ -39,6 +39,11 @@ String String::RemoveLast()
 	return output;
 }
 
+void String::Empty()
+{
+	this->c_str = (char*)"";
+}
+
 String String::Split( uint16_t start, uint16_t end )
 {
 	String output = "";

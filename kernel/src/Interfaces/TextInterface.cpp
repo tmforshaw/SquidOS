@@ -52,6 +52,11 @@ TextUI::TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col, u
 
 	BG_Col = p_BG_Col;
 	TextCol = p_TextCol;
+
+	// Cursor Properties
+	CursorCol = DEFAULT_COLOUR;
+	CursorWidth = 2;
+	CursorOffset = 1;
 }
 
 Point TextUI::localToAbsolute( Point position )
@@ -61,11 +66,20 @@ Point TextUI::localToAbsolute( Point position )
 
 #include "../Types/C_String.hpp"
 
+void TextUI::DisplayCursor()
+{
+	GlobalRenderer->PushColour( CursorCol );
+	GlobalRenderer->Rect( { AbsoluteCursorPosition.X + CursorOffset, AbsoluteCursorPosition.Y }, CursorWidth, GlobalRenderer->PSF1_Font->psf1_Header->charsize, true );
+	GlobalRenderer->PopColour();
+}
+
 void TextUI::Display()
 {
 	GlobalRenderer->PushColour( BG_Col );
 	GlobalRenderer->Rect( Pos, Width, Height, true );
 	GlobalRenderer->PopColour();
+
+	DisplayCursor();
 
 	if ( text.Length() == 0 ) // Return if there is no text
 		return;
@@ -90,8 +104,6 @@ void TextUI::Display()
 	}
 }
 
-static uint32_t Max_x = 0, Max_y = 0;
-
 uint32_t TextUI::MinX()
 {
 	return Pos.X + PadLeft + CentraliserX;
@@ -101,6 +113,8 @@ uint32_t TextUI::MinY()
 {
 	return Pos.Y + PadTop + CentraliserY;
 }
+
+static uint32_t Max_x = 0, Max_y = 0;
 
 uint32_t TextUI::MaxX()
 {
@@ -168,14 +182,17 @@ void TextUI::SendChar( char chr )
 	{
 		if ( GetRow() < RowNum() - 1 ) // There are lines available
 		{
-			// GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
-			text += chr; // Add to text variable
+			if ( !isCommandLine )
+			{
+				// GlobalRenderer->PutChar( chr, SelectedTextUI->AbsoluteCursorPosition.X, SelectedTextUI->AbsoluteCursorPosition.Y );
+				text += chr; // Add to text variable
 
-			text += '\n'; // Add newline to text
+				text += '\n'; // Add newline to text
 
-			// New line
-			AbsoluteCursorPosition.X = MinX();
-			AbsoluteCursorPosition.Y += GlobalRenderer->PSF1_Font->psf1_Header->charsize;
+				// New line
+				AbsoluteCursorPosition.X = MinX();
+				AbsoluteCursorPosition.Y += GlobalRenderer->PSF1_Font->psf1_Header->charsize;
+			}
 		}
 		else // Fill in the last character
 		{
@@ -201,7 +218,7 @@ void TextUI::SendBackspace()
 {
 	if ( GetCol() == 0 ) // In first column
 	{
-		SelectedTextUI->AbsoluteCursorPosition.X = ( PSF1_FontWidth * ( ColNum() - 1 ) + MinX() ); // Puts it in the last column
+		SelectedTextUI->AbsoluteCursorPosition.X = ( PSF1_FontWidth * ( ColNum() ) + MinX() ); // Puts it in the last column (+1 so it is on the end)
 
 		if ( GetRow() > 0 ) // Isn't on the first row
 			AbsoluteCursorPosition.Y -= GlobalRenderer->PSF1_Font->psf1_Header->charsize;
@@ -214,15 +231,21 @@ void TextUI::SendBackspace()
 	else
 		SelectedTextUI->AbsoluteCursorPosition.X -= PSF1_FontWidth;
 
-	GlobalRenderer->ClearChar( AbsoluteCursorPosition.X, AbsoluteCursorPosition.Y, BG_Col );
+	// GlobalRenderer->ClearChar( AbsoluteCursorPosition.X, AbsoluteCursorPosition.Y, BG_Col );
 	text = text.RemoveLast(); // Remove the last char of text
+
+	Display();
 }
 
 void TextUI::SendEnter()
 {
 	if ( isCommandLine )
 	{
-		GlobalCommand.SendCommand(); // Send off the command
+		GlobalCommand.SendCommand( text.GetCstr() ); // Send off the command
+		text[0] = '\0';								 // This is a bit shady but it works
+		AbsoluteCursorPosition.X = MinX();
+
+		Display();
 		return;
 	}
 

@@ -5,13 +5,7 @@ extern "C" void _start( BootInfo* bootInfo )
 	KernelInfo kernelInfo = InitialiseKernel( bootInfo );
 	PageTableManager* PageTableManager = kernelInfo.pageTableManager;
 
-	// GlobalCommand.Display(); // Show the CLI
-
-	// GlobalRenderer->Print( to_string( (uint64_t)GlobalCommand.GetTextUI().AbsoluteCursorPosition.X ) );
-
-	TextUI txt = TextUI( { 300, 25 }, 200, 75 );
-	txt.Display();
-	SelectedTextUI = &txt;
+	GlobalCommand.Display(); // Show the CLI
 
 	GlobalRenderer->Rect( { 250, 250 }, 150, 150 );
 	GlobalRenderer->Rect( { 250, 425 }, 150, 150, false );
@@ -23,3 +17,6 @@ extern "C" void _start( BootInfo* bootInfo )
 	// clang-format off
 	while ( true );
 }
+
+
+// The text wont empty when I tell it to

@@ -14,8 +14,6 @@ private:
 	uint16_t PadLeft, PadRight, PadTop, PadBottom;
 	uint16_t CentraliserX, CentraliserY;
 
-	String text;
-
 	Point localToAbsolute( Point position );
 
 public:
@@ -24,10 +22,16 @@ public:
 
 	uint32_t BG_Col;
 	uint32_t TextCol;
+	uint32_t CursorCol;
+	uint8_t CursorWidth;
+	int8_t CursorOffset;
+
+	String text;
 
 	TextUI();
 	TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col = GREY, uint32_t p_TextCol = GREEN );
 
+	void DisplayCursor();
 	void Display();
 
 	uint32_t MinX();
