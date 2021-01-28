@@ -20,12 +20,7 @@ TextUI& CommandManager::GetTextUI()
 void CommandManager::SendCommand( const char* command )
 {
 	// Process the commandText here
-
 	GlobalRenderer->Print( command );
-
-	// SelectedTextUI->text = "";
-
-	// CommandLineUI.text.Empty();
 }
 
 void CommandManager::Display()
