@@ -40,6 +40,8 @@ public:
 
 	void Rect( Point pos, uint16_t width, uint16_t height, bool fill = true );
 	void Circle( Point pos, uint16_t r, bool fill = true );
+	void Sin( Point pos, uint16_t width, uint16_t step, uint16_t amplitude = 1, float timePeriod = 75.0f, float xOffset = 0.0f );
+	void Cos( Point pos, uint16_t width, uint16_t step, uint16_t amplitude = 1, float timePeriod = 75.0f, float xOffset = 0.0f );
 
 private:
 	void DisplayBresenham( Point pos, int16_t x, int16_t y ); // Hide so it cannot be used outside of class

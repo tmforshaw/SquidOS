@@ -241,8 +241,16 @@ void TextUI::SendEnter()
 {
 	if ( isCommandLine )
 	{
-		GlobalCommand.SendCommand( text ); // Send off the command
-		text[0] = '\0';					   // This is a bit shady but it works
+		String command = text.GetWord( 0 );
+		String params = text.GetAfterWord( 0 );
+
+		GlobalRenderer->Print( command );
+		GlobalRenderer->Print( "_" );
+		GlobalRenderer->Endl();
+
+		GlobalCommand.SendCommand( command, params ); // Send off the command
+
+		text[0] = '\0'; // This is a bit shady but it works
 		AbsoluteCursorPosition.X = MinX();
 
 		Display();

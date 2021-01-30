@@ -235,3 +235,25 @@ void BasicRenderer::DisplayBresenham( Point pos, int16_t x, int16_t y )
 	PutPix( { ( uint32_t )( pos.X + y ), ( uint32_t )( pos.Y - x ) } );
 	PutPix( { ( uint32_t )( pos.X - y ), ( uint32_t )( pos.Y - x ) } );
 }
+
+void BasicRenderer::Sin( Point pos, uint16_t width, uint16_t step, uint16_t amplitude, float timePeriod, float xOffset )
+{
+	uint16_t minimumX = pos.X;
+	uint16_t aX = 0;
+	float omega = 1 / timePeriod; // Should be TAU / T but that makes the numbers large
+
+	if ( minimumX + pos.Y * TargetFramebuffer->PixelsPerScanLine < 0 ) minimumX = 0;
+
+	while ( aX + minimumX < min( ( uint32_t )( minimumX + width ), TargetFramebuffer->Width ) )
+	{
+		PutPix( { ( uint32_t )( aX + minimumX ), pos.Y + ( uint32_t )( amplitude * -sin( omega * (float)( aX + xOffset ) ) ) } ); // The xOffset only affects the y-value
+
+		// x += step;
+		aX += step;
+	}
+}
+
+void BasicRenderer::Cos( Point pos, uint16_t width, uint16_t step, uint16_t amplitude, float timePeriod, float xOffset )
+{
+	Sin( pos, width, step, amplitude, timePeriod, ( Math::PI_2 + xOffset ) * timePeriod ); // Offset sin by PI/2
+}

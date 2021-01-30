@@ -17,20 +17,13 @@ TextUI& CommandManager::GetTextUI()
 	return this->CommandLineUI;
 }
 
-void CommandManager::SendCommand( String command )
+void CommandManager::SendCommand( String command, String params )
 {
-	// Process the commandText here
-	String Params = command.GetAfterWord( 0 );
-	String CommandWord = command.GetWord( 0 );
-
-	GlobalRenderer->Print( CommandWord );
-	GlobalRenderer->Endl();
-
 	for ( Command com : CommandArray )
 	{
-		if ( CommandWord == com.Name )
+		if ( command == com.Name )
 		{
-			com.Function( CommandLineUI, Params );
+			com.Function( CommandLineUI, params );
 			GlobalRenderer->Print( "Command Called" );
 			GlobalRenderer->Endl();
 			return;

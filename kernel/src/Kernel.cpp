@@ -7,19 +7,22 @@ extern "C" void _start( BootInfo* bootInfo )
 
 	GlobalCommand.Display(); // Show the CLI
 
-	// String str = "Hello this is a test";
-	// GlobalRenderer->Print( str.GetAfterWord( 1 ) );
+	// String test = "Command Param1 Param2";
+	// GlobalRenderer->Print( test );
+	// GlobalRenderer->Endl();
+	// GlobalRenderer->Print( test.GetWord( 0 ) );
+	// GlobalRenderer->Print( "_" );
+	// GlobalRenderer->Endl();
 
 	GlobalRenderer->Rect( { 250, 250 }, 150, 150 );
 	GlobalRenderer->Rect( { 250, 425 }, 150, 150, false );
 	GlobalRenderer->Circle( { 500, 325 }, 75, false );
 	GlobalRenderer->Circle( { 500, 500 }, 75 );
 
+	GlobalRenderer->Cos( { 650, 225 }, GlobalRenderer->TargetFramebuffer->Width / 2, 1, 150, 60.0f );
+
 	// GlobalSound->PlayFrequency( 1 );
 
 	// clang-format off
 	while ( true );
 }
-
-
-// The text wont empty when I tell it to

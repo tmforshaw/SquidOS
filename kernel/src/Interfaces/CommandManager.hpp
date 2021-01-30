@@ -13,7 +13,7 @@ public:
 
 	TextUI& GetTextUI();
 
-	void SendCommand( String command );
+	void SendCommand( String command, String params );
 	void Display();
 };
 

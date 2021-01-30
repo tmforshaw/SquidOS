@@ -48,7 +48,7 @@ String String::GetWord( uint16_t index )
 {
 	bool onWord = false;
 	uint16_t wordIndex = 0;
-	uint16_t lastSpaceIndex = 0;
+	int16_t lastSpaceIndex = -1;
 
 	for ( uint16_t i = 0; i < this->Length(); i++ )
 	{
@@ -74,14 +74,18 @@ String String::GetWord( uint16_t index )
 			lastSpaceIndex = i;
 	}
 
-	return ( *this );
+	if ( onWord && wordIndex == index )
+		return this->Splice( lastSpaceIndex + 1, this->Length() );
+
+	// Index doesn't exist
+	return String( "" );
 }
 
 String String::GetAfterWord( uint16_t index )
 {
 	bool onWord = false;
 	uint16_t wordIndex = 0;
-	uint16_t lastSpaceIndex = 0;
+	int16_t lastSpaceIndex = -1;
 
 	for ( uint16_t i = 0; i < this->Length(); i++ )
 	{
@@ -107,7 +111,11 @@ String String::GetAfterWord( uint16_t index )
 			lastSpaceIndex = i;
 	}
 
-	return ( *this );
+	if ( onWord && wordIndex == index + 1 )
+		return this->Splice( lastSpaceIndex + 1, this->Length() );
+
+	// Index doesn't exist
+	return String( "" );
 }
 
 String String::Splice( uint16_t start, uint16_t end )
@@ -115,7 +123,7 @@ String String::Splice( uint16_t start, uint16_t end )
 	String output = "";
 
 	for ( uint16_t i = start; i < end; i++ )
-		output += c_str[i];
+		output[i - start] = this->c_str[i];
 
 	output[end - start] = '\0';
 
@@ -130,7 +138,7 @@ void String::operator+=( String other )
 	for ( uint16_t i = len; i < len + otherLen; i++ )
 		this->c_str[i] = other.GetCstr()[i - len];
 
-	this->c_str[len + otherLen] = '\0';
+	this->c_str[len + otherLen - 1] = '\0';
 }
 
 String String::operator+( const String& other )
