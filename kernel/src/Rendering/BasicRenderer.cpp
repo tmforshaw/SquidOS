@@ -117,7 +117,7 @@ void BasicRenderer::PopColour() { Colour = ColourStack; }
 
 // Drawing
 
-void BasicRenderer::PutPix( Point p )
+void BasicRenderer::PutPix( PointU p )
 {
 	uint32_t pixPtr = p.X + p.Y * TargetFramebuffer->PixelsPerScanLine;
 
@@ -125,7 +125,7 @@ void BasicRenderer::PutPix( Point p )
 		*( (uint32_t*)TargetFramebuffer->BaseAddress + pixPtr ) = Colour;
 }
 
-void BasicRenderer::Line( Point p1, Point p2 )
+void BasicRenderer::Line( PointU p1, PointU p2 )
 {
 	float dx = (float)p2.X - (float)p1.X;
 	float dy = (float)p2.Y - (float)p1.Y;
@@ -157,7 +157,7 @@ void BasicRenderer::Line( Point p1, Point p2 )
 	}
 }
 
-void BasicRenderer::Rect( Point pos, uint16_t width, uint16_t height, bool fill )
+void BasicRenderer::Rect( PointU pos, uint16_t width, uint16_t height, bool fill )
 {
 	if ( fill )
 	{
@@ -176,7 +176,7 @@ void BasicRenderer::Rect( Point pos, uint16_t width, uint16_t height, bool fill 
 	}
 }
 
-void BasicRenderer::Circle( Point pos, uint16_t r, bool fill )
+void BasicRenderer::Circle( PointU pos, uint16_t r, bool fill )
 {
 	if ( fill )
 	{
@@ -222,7 +222,7 @@ void BasicRenderer::Circle( Point pos, uint16_t r, bool fill )
 	}
 }
 
-void BasicRenderer::DisplayBresenham( Point pos, int16_t x, int16_t y )
+void BasicRenderer::DisplayBresenham( PointU pos, int16_t x, int16_t y )
 {
 	// Mirror the pixel to all 8 octants
 
@@ -236,7 +236,7 @@ void BasicRenderer::DisplayBresenham( Point pos, int16_t x, int16_t y )
 	PutPix( { ( uint32_t )( pos.X - y ), ( uint32_t )( pos.Y - x ) } );
 }
 
-void BasicRenderer::Sin( Point pos, uint16_t width, uint16_t step, uint16_t amplitude, float timePeriod, float xOffset )
+void BasicRenderer::Sin( PointU pos, uint16_t width, uint16_t step, uint16_t amplitude, float timePeriod, float xOffset )
 {
 	uint16_t minimumX = pos.X;
 	uint16_t aX = 0;
@@ -253,7 +253,7 @@ void BasicRenderer::Sin( Point pos, uint16_t width, uint16_t step, uint16_t ampl
 	}
 }
 
-void BasicRenderer::Cos( Point pos, uint16_t width, uint16_t step, uint16_t amplitude, float timePeriod, float xOffset )
+void BasicRenderer::Cos( PointU pos, uint16_t width, uint16_t step, uint16_t amplitude, float timePeriod, float xOffset )
 {
 	Sin( pos, width, step, amplitude, timePeriod, ( Math::PI_2 + xOffset ) * timePeriod ); // Offset sin by PI/2
 }

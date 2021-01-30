@@ -23,6 +23,13 @@ extern "C" void _start( BootInfo* bootInfo )
 
 	// GlobalSound->PlayFrequency( 1 );
 
-	// clang-format off
-	while ( true );
+	// Kernel Loop
+	while ( true )
+	{
+		ProcessMousePacket();
+	}
+
+	while ( true ) {}
 }
+
+// TEXT INTERFACE ETC

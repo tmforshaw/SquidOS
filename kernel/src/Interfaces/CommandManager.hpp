@@ -9,7 +9,7 @@ private:
 	TextUI CommandLineUI;
 
 public:
-	CommandManager( Point pos, uint16_t width, uint16_t height );
+	CommandManager( PointU pos, uint16_t width, uint16_t height );
 
 	TextUI& GetTextUI();
 

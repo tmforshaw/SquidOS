@@ -26,11 +26,23 @@ namespace Math
 
 struct Point
 {
+	int32_t X;
+	int32_t Y;
+};
+
+struct PointU
+{
 	uint32_t X;
 	uint32_t Y;
 };
 
 struct Point16
+{
+	int16_t X;
+	int16_t Y;
+};
+
+struct PointU16
 {
 	uint16_t X;
 	uint16_t Y;

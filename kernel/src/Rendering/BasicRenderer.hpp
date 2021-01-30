@@ -9,7 +9,7 @@
 class BasicRenderer
 {
 public:
-	Point CursorPosition;
+	PointU CursorPosition;
 	Framebuffer* TargetFramebuffer;
 	PSF1_FONT* PSF1_Font;
 	uint32_t Colour;
@@ -34,17 +34,17 @@ public:
 
 	// Drawing
 
-	void PutPix( Point p );
+	void PutPix( PointU p );
 
-	void Line( Point p1, Point p2 );
+	void Line( PointU p1, PointU p2 );
 
-	void Rect( Point pos, uint16_t width, uint16_t height, bool fill = true );
-	void Circle( Point pos, uint16_t r, bool fill = true );
-	void Sin( Point pos, uint16_t width, uint16_t step, uint16_t amplitude = 1, float timePeriod = 75.0f, float xOffset = 0.0f );
-	void Cos( Point pos, uint16_t width, uint16_t step, uint16_t amplitude = 1, float timePeriod = 75.0f, float xOffset = 0.0f );
+	void Rect( PointU pos, uint16_t width, uint16_t height, bool fill = true );
+	void Circle( PointU pos, uint16_t r, bool fill = true );
+	void Sin( PointU pos, uint16_t width, uint16_t step, uint16_t amplitude = 1, float timePeriod = 75.0f, float xOffset = 0.0f );
+	void Cos( PointU pos, uint16_t width, uint16_t step, uint16_t amplitude = 1, float timePeriod = 75.0f, float xOffset = 0.0f );
 
 private:
-	void DisplayBresenham( Point pos, int16_t x, int16_t y ); // Hide so it cannot be used outside of class
+	void DisplayBresenham( PointU pos, int16_t x, int16_t y ); // Hide so it cannot be used outside of class
 };
 
 extern BasicRenderer* GlobalRenderer;

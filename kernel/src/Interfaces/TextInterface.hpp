@@ -8,16 +8,16 @@
 class TextUI
 {
 private:
-	Point Pos;
+	PointU Pos;
 	uint16_t Width;
 	uint16_t Height;
 	uint16_t PadLeft, PadRight, PadTop, PadBottom;
 	uint16_t CentraliserX, CentraliserY;
 
-	Point localToAbsolute( Point position );
+	PointU localToAbsolute( PointU position );
 
 public:
-	Point AbsoluteCursorPosition;
+	PointU AbsoluteCursorPosition;
 	bool isCommandLine;
 
 	uint32_t BG_Col;
@@ -29,7 +29,7 @@ public:
 	String text;
 
 	TextUI();
-	TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col = GREY, uint32_t p_TextCol = GREEN );
+	TextUI( PointU pos, uint16_t width, uint16_t height, uint32_t p_BG_Col = GREY, uint32_t p_TextCol = GREEN );
 
 	void DisplayCursor();
 	void Display();

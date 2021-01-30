@@ -133,7 +133,7 @@ void PageFrameAllocator::ReadEFIMemoryMap( EFI_MEMORY_DESCRIPTOR* m_Map, size_t 
 
 	InitBitmap( bitmapSize, largestFreeMemSeg );
 
-	LockPages( &PageBitmap, PageBitmap.Size / PAGE_SIZE + 1 );
+	LockPages( PageBitmap.Buffer, PageBitmap.Size / PAGE_SIZE + 1 );
 
 	for ( int i = 0; i < m_MapEntries; i++ )
 	{

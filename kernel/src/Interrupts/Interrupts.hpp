@@ -12,10 +12,11 @@
 #define ICW4_8086 0x01
 
 struct interrupt_frame;
-__attribute__( ( interrupt ) ) void PageFault_Handler( struct interrupt_frame* frame );
-__attribute__( ( interrupt ) ) void DoubleFault_Handler( struct interrupt_frame* frame ); // Two unhandled faults in a row
-__attribute__( ( interrupt ) ) void GPFault_Handler( struct interrupt_frame* frame );	  // General protection fault
-__attribute__( ( interrupt ) ) void KeyboardInt_Handler( struct interrupt_frame* frame ); // Keyboard interrupts
+__attribute__( ( interrupt ) ) void PageFault_Handler( interrupt_frame* frame );   // Fault with paging
+__attribute__( ( interrupt ) ) void DoubleFault_Handler( interrupt_frame* frame ); // Two unhandled faults in a row
+__attribute__( ( interrupt ) ) void GPFault_Handler( interrupt_frame* frame );	   // General protection fault
+__attribute__( ( interrupt ) ) void KeyboardInt_Handler( interrupt_frame* frame ); // Keyboard interrupts
+__attribute__( ( interrupt ) ) void MouseInt_Handler( interrupt_frame* frame );	   // Keyboard interrupts
 
 void RemapPIC();
 void PIC_EndMaster();

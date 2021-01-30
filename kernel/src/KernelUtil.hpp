@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IO/Mouse.hpp"
 #include "Interfaces/CommandManager.hpp"
 #include "Interfaces/TextInterface.hpp"
 #include "Memory/EFI_Memory.hpp"

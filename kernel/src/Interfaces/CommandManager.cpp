@@ -5,7 +5,7 @@
 
 CommandManager GlobalCommand = CommandManager( { 0, 0 }, 0, 0 );
 
-CommandManager::CommandManager( Point pos, uint16_t width, uint16_t height )
+CommandManager::CommandManager( PointU pos, uint16_t width, uint16_t height )
 {
 	CommandLineUI = TextUI( pos, width, height );
 

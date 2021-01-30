@@ -29,7 +29,7 @@ TextUI::TextUI()
 	TextCol = DEFAULT_COLOUR;
 }
 
-TextUI::TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col, uint32_t p_TextCol )
+TextUI::TextUI( PointU pos, uint16_t width, uint16_t height, uint32_t p_BG_Col, uint32_t p_TextCol )
 {
 	Pos = pos;
 	Width = width;
@@ -59,7 +59,7 @@ TextUI::TextUI( Point pos, uint16_t width, uint16_t height, uint32_t p_BG_Col, u
 	CursorOffset = 1;
 }
 
-Point TextUI::localToAbsolute( Point position )
+PointU TextUI::localToAbsolute( PointU position )
 {
 	return { position.X + Pos.X, position.Y + Pos.Y };
 }

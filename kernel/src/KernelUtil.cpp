@@ -45,45 +45,30 @@ void PrepareMemory( BootInfo* bootInfo )
 	kernelInfo.pageTableManager = &pageTableManager;
 }
 
+void SetIDT_Gate( void* handler, uint8_t entryOffset, uint8_t type_attr, uint8_t selector )
+{
+	IDT_DescEntry* interrupt = (IDT_DescEntry*)( idtr.Offset + entryOffset * sizeof( IDT_DescEntry ) );
+	interrupt->SetOffset( (uint64_t)handler );
+	interrupt->Type_attr = type_attr;
+	interrupt->Selector = selector;
+}
+
 void PrepareInterrupts()
 {
 	idtr.Limit = 0x0FFF;
 	idtr.Offset = (uint64_t)GlobalAllocator.RequestPage();
 
-	// Page fault
-	IDT_DescEntry* int_PageFault = (IDT_DescEntry*)( idtr.Offset + 0xE * sizeof( IDT_DescEntry ) );
-	int_PageFault->SetOffset( (uint64_t)PageFault_Handler );
-	int_PageFault->Type_attr = IDT_TA_InterruptGate;
-	int_PageFault->Selector = 0x08;
-
-	// Double fault
-	IDT_DescEntry* int_DoubleFault = (IDT_DescEntry*)( idtr.Offset + 0x8 * sizeof( IDT_DescEntry ) );
-	int_DoubleFault->SetOffset( (uint64_t)DoubleFault_Handler );
-	int_DoubleFault->Type_attr = IDT_TA_InterruptGate;
-	int_DoubleFault->Selector = 0x08;
-
-	// General protection fault
-	IDT_DescEntry* int_GPFault = (IDT_DescEntry*)( idtr.Offset + 0xD * sizeof( IDT_DescEntry ) );
-	int_GPFault->SetOffset( (uint64_t)GPFault_Handler );
-	int_GPFault->Type_attr = IDT_TA_InterruptGate;
-	int_GPFault->Selector = 0x08;
-
-	// Keyboard handler
-	IDT_DescEntry* int_Keyboard = (IDT_DescEntry*)( idtr.Offset + 0x21 * sizeof( IDT_DescEntry ) );
-	int_Keyboard->SetOffset( (uint64_t)KeyboardInt_Handler );
-	int_Keyboard->Type_attr = IDT_TA_InterruptGate;
-	int_Keyboard->Selector = 0x08;
+	SetIDT_Gate( (void*)PageFault_Handler, 0x0E, IDT_TA_InterruptGate, 0x08 );	 // Page fault
+	SetIDT_Gate( (void*)DoubleFault_Handler, 0x08, IDT_TA_InterruptGate, 0x08 ); // Double fault
+	SetIDT_Gate( (void*)GPFault_Handler, 0x0D, IDT_TA_InterruptGate, 0x08 );	 // General protection fault
+	SetIDT_Gate( (void*)KeyboardInt_Handler, 0x21, IDT_TA_InterruptGate, 0x08 ); // Keyboard handler
+	SetIDT_Gate( (void*)MouseInt_Handler, 0x2C, IDT_TA_InterruptGate, 0x08 );	 // Mouse handler
 
 	asm( "lidt %0"
 		 :
 		 : "m"( idtr ) ); // Moves idtr and loads gdt
 
 	RemapPIC();
-
-	outb( PIC1_DATA, 0b11111101 ); // Unmask second interrupt
-	outb( PIC2_DATA, 0b11111111 );
-
-	asm( "sti" ); // Enable maskable interrupts
 }
 
 BasicRenderer ren = BasicRenderer( nullptr, nullptr );
@@ -106,6 +91,13 @@ KernelInfo InitialiseKernel( BootInfo* bootInfo )
 	// Initialise Interrupts
 	PrepareInterrupts();
 
+	// Initialise Mouse
+	InitPS2Mouse();
+
+	// Unmask PIC DATA
+	outb( PIC1_DATA, 0b11111001 );
+	outb( PIC2_DATA, 0b11101111 );
+
 	// Initialise Sound
 	GlobalSound = &sou;
 
@@ -115,6 +107,8 @@ KernelInfo InitialiseKernel( BootInfo* bootInfo )
 
 	// Clear framebuffer
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize );
+
+	asm( "sti" ); // Enable maskable interrupts
 
 	// Display RAM data
 	GlobalRenderer->Print( "Kernel Initialised Successfully" );
