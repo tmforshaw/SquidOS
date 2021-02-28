@@ -25,4 +25,6 @@ namespace PCI
 	void		EnumeratePCI( ACPI::MCFG_Header* mcfg );
 	const char* GetVendorName( uint16_t vendorID );
 	const char* GetDeviceName( uint16_t vendorID, uint16_t deviceID );
+	const char* GetSubclassName( uint8_t classCode, uint8_t subclassCode );
+	const char* GetProgIF_Name( uint8_t classCode, uint8_t subclassCode, uint8_t progIF );
 } // namespace PCI

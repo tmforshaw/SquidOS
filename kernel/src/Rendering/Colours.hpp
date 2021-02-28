@@ -11,7 +11,7 @@
 #define YELLOW 0xFFFFFF00
 #define GREY   0xFF101010
 
-#define DEFAULT_COLOUR	  GREEN
+#define DEFAULT_COLOUR	  WHITE
 #define DEFAULT_BG_COLOUR BLACK
 
 uint32_t RGBA_ToHex( uint8_t r, uint8_t g, uint8_t b, uint8_t a );

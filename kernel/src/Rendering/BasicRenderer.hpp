@@ -9,18 +9,18 @@
 class BasicRenderer
 {
 public:
-	PointU CursorPosition;
+	PointU		 CursorPosition;
 	Framebuffer* TargetFramebuffer;
-	PSF1_FONT* PSF1_Font;
-	uint32_t Colour;
-	uint32_t ClearColour;
-	uint32_t ColourStack; // Used to temporarily hold colours
+	PSF1_FONT*	 PSF1_Font;
+	uint32_t	 Colour;
+	uint32_t	 ClearColour;
+	uint32_t	 ColourStack; // Used to temporarily hold colours
 
 	uint32_t MouseCursorBuffer[16 * 16];
 	uint32_t MouseCursorBufferNext[16 * 16];
-	bool MouseDrawn;
+	bool	 MouseDrawn;
 
-	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = GREEN, uint32_t p_ClearColour = BLACK );
+	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = DEFAULT_COLOUR, uint32_t p_ClearColour = DEFAULT_BG_COLOUR );
 
 	// Text
 
@@ -29,8 +29,8 @@ public:
 	void Print( String str );
 	void Print( char chr );
 
-	void Clear( uint32_t colour = BLACK );
-	void ClearChar( uint16_t xOff, uint16_t yOff, uint32_t colour = BLACK );
+	void Clear( uint32_t colour = DEFAULT_BG_COLOUR );
+	void ClearChar( uint16_t xOff, uint16_t yOff, uint32_t colour = DEFAULT_BG_COLOUR );
 	void Endl( uint16_t amt = 1 );
 
 	// Mouse
@@ -45,7 +45,7 @@ public:
 
 	// Drawing
 
-	void PutPix( PointU p );
+	void	 PutPix( PointU p );
 	uint32_t GetPix( PointU p );
 
 	void Line( PointU p1, PointU p2 );
