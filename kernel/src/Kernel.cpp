@@ -23,12 +23,6 @@ extern "C" void _start( BootInfo* bootInfo )
 
 	// GlobalSound->PlayFrequency( 1 );
 
-	// Kernel Loop
-	while ( true )
-	{
-		ProcessMousePacket();
-	}
-
 	while ( true ) {}
 }
 

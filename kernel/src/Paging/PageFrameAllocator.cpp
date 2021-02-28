@@ -2,16 +2,16 @@
 
 #include "PageMapIndexer.hpp"
 
-uint64_t freeMemory; // Free memory of the entire system
-uint64_t reservedMemory;
-uint64_t usedMemory; // Allocated memory
-static bool Initialised = false;
+uint64_t		   freeMemory; // Free memory of the entire system
+uint64_t		   reservedMemory;
+uint64_t		   usedMemory; // Allocated memory
+static bool		   Initialised = false;
 PageFrameAllocator GlobalAllocator;
-static uint64_t pageBitmapIndex = 0; // Index for requesting a page
+static uint64_t	   pageBitmapIndex = 0; // Index for requesting a page
 
 void PageFrameAllocator::InitBitmap( size_t bitmapSize, void* bufferAddress )
 {
-	PageBitmap.Size = bitmapSize;
+	PageBitmap.Size	  = bitmapSize;
 	PageBitmap.Buffer = (uint8_t*)bufferAddress;
 
 	for ( int i = 0; i < bitmapSize; i++ )
@@ -109,7 +109,7 @@ void PageFrameAllocator::ReadEFIMemoryMap( EFI_MEMORY_DESCRIPTOR* m_Map, size_t 
 
 	uint64_t m_MapEntries = m_MapSize / m_MapDescriptorSize;
 
-	void* largestFreeMemSeg = nullptr;
+	void*  largestFreeMemSeg	 = nullptr;
 	size_t largestFreeMemSegSize = 0;
 
 	for ( int i = 0; i < m_MapEntries; i++ )
@@ -120,28 +120,32 @@ void PageFrameAllocator::ReadEFIMemoryMap( EFI_MEMORY_DESCRIPTOR* m_Map, size_t 
 		{
 			if ( desc->numPages * PAGE_SIZE > largestFreeMemSegSize )
 			{
-				largestFreeMemSeg = desc->physAddr;
+				largestFreeMemSeg	  = desc->physAddr;
 				largestFreeMemSegSize = desc->numPages * PAGE_SIZE;
 			}
 		}
 	}
 
 	uint64_t memorySize = GetMemorySize( m_Map, m_MapEntries, m_MapDescriptorSize );
-	freeMemory = memorySize;
+	freeMemory			= memorySize;
 
 	uint64_t bitmapSize = memorySize / PAGE_SIZE / 8 + 1; // +1 To ensure we have enough space
 
 	InitBitmap( bitmapSize, largestFreeMemSeg );
 
-	LockPages( PageBitmap.Buffer, PageBitmap.Size / PAGE_SIZE + 1 );
+	ReservePages( 0x00, memorySize / 0x1000 + 1 ); // Reserve all pages of memory
 
 	for ( int i = 0; i < m_MapEntries; i++ )
 	{
 		EFI_MEMORY_DESCRIPTOR* desc = (EFI_MEMORY_DESCRIPTOR*)( (uint64_t)m_Map + ( i * m_MapDescriptorSize ) );
 
-		if ( desc->type != 7 ) // Type != EfiConventionalMemory
-			ReservePages( desc->physAddr, desc->numPages );
+		if ( desc->type == 7 ) // Type == EfiConventionalMemory
+			UnreservePages( desc->physAddr, desc->numPages );
 	}
+
+	ReservePages( 0, 0x100 ); // Reserve between 0 and 0x100 000 (Reserve BIOS)
+
+	LockPages( PageBitmap.Buffer, PageBitmap.Size / PAGE_SIZE + 1 );
 }
 
 void* PageFrameAllocator::RequestPage()

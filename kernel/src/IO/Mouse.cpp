@@ -72,24 +72,29 @@ uint8_t MouseRead()
 
 void HandlePS2Mouse( uint8_t data )
 {
+	ProcessMousePacket();
+	static bool skip = true;
+
+	if ( skip )
+	{
+		skip = false;
+		return;
+	}
+
 	switch ( MouseCycle )
 	{
 	case 0:
-		if ( MousePacketReady ) break;
 		if ( ( data & 0b00001000 ) == 0 ) break; // Always 1 bit isn't 1 (Mouse is out of sync)
-
 		MousePacket[0] = data;
 		MouseCycle++;
 		break;
 
 	case 1:
-		if ( MousePacketReady ) break;
 		MousePacket[1] = data;
 		MouseCycle++;
 		break;
 
 	case 2:
-		if ( MousePacketReady ) break;
 		MousePacket[2]	 = data;
 		MousePacketReady = true; // Handled all packets
 		MouseCycle		 = 0;
