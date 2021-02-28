@@ -4,6 +4,7 @@
 #include "IO/IO.hpp"
 #include "Interrupts/IDT.hpp"
 #include "Interrupts/Interrupts.hpp"
+#include "Memory/Heap.hpp"
 #include "PCI/PCI.hpp"
 
 KernelInfo		 kernelInfo;
@@ -103,14 +104,17 @@ KernelInfo	  InitialiseKernel( BootInfo* bootInfo )
 	// Clear framebuffer
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize );
 
-	// Initialise ACPI
-	PrepareACPI( bootInfo );
+	// Initialise the heap
+	InitialiseHeap( (void*)0x0000100000000000, 0x10 ); // Initialise with 10 pages
 
 	// Initialise Interrupts
 	PrepareInterrupts();
 
 	// Initialise Mouse
 	InitPS2Mouse();
+
+	// Initialise ACPI
+	PrepareACPI( bootInfo );
 
 	// Unmask PIC DATA
 	outb( PIC1_DATA, 0b11111001 );
