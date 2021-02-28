@@ -9,3 +9,5 @@ public:
 	PageTableManager( PageTable* PML4Address );
 	void MapMemory( void* virtualMemory, void* physicalMemory );
 };
+
+extern PageTableManager GlobalPageTableManager;

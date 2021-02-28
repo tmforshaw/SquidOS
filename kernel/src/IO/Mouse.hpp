@@ -2,8 +2,8 @@
 #include "../Math/Math.hpp"
 
 #define PS2LeftButton	0b00000001 // Left button bit
-#define PS2MiddleButton 0b00000010 // Middle button bit
-#define PS2RightButton	0b00000100 // Right button bit
+#define PS2MiddleButton 0b00000100 // Middle button bit
+#define PS2RightButton	0b00000010 // Right button bit
 
 #define PS2XSign	 0b00010000 // X sign bit
 #define PS2YSign	 0b00100000 // Y sign bit
@@ -15,3 +15,9 @@ void ProcessMousePacket();
 void InitPS2Mouse();
 
 extern Point MousePosition;
+
+extern uint8_t MousePointer[];
+
+extern bool LeftButtonDown;
+extern bool MiddleButtonDown;
+extern bool RightButtonDown;

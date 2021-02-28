@@ -2,10 +2,10 @@
 
 extern "C" void _start( BootInfo* bootInfo )
 {
-	KernelInfo kernelInfo = InitialiseKernel( bootInfo );
+	KernelInfo		  kernelInfo	   = InitialiseKernel( bootInfo );
 	PageTableManager* PageTableManager = kernelInfo.pageTableManager;
 
-	GlobalCommand.Display(); // Show the CLI
+	// GlobalCommand.Display(); // Show the CLI
 
 	// String test = "Command Param1 Param2";
 	// GlobalRenderer->Print( test );
@@ -33,3 +33,4 @@ extern "C" void _start( BootInfo* bootInfo )
 }
 
 // TEXT INTERFACE ETC
+// CONVERSION FROM POINT TO POINTU

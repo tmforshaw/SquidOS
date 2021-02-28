@@ -14,6 +14,8 @@ BasicRenderer::BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF
 	Colour = p_Colour;
 	ClearColour = p_ClearColour;
 	ColourStack = p_Colour;
+
+	MouseDrawn = false;
 }
 
 void BasicRenderer::PutChar( char chr, uint32_t xOff, uint32_t yOff )
@@ -105,7 +107,76 @@ void BasicRenderer::Endl( uint16_t amt )
 		CursorPosition = { 0, CursorPosition.Y + PSF1_Font->psf1_Header->charsize };
 }
 
-// Colour Stuff
+// Mouse
+
+void BasicRenderer::ClearMouseCursor( Point pos, uint8_t* MouseCursor )
+{
+	if ( !MouseDrawn ) return;
+
+	int xMax = 16;
+	int yMax = 16;
+	int diffX = TargetFramebuffer->Width - pos.X;
+	int diffY = TargetFramebuffer->Height - pos.Y;
+
+	// Prevent going over frame buffer
+	if ( diffX < xMax ) xMax = diffX;
+	if ( diffY < yMax ) yMax = diffY;
+
+	for ( int y = 0; y < yMax; y++ )
+	{
+		for ( int x = 0; x < xMax; x++ )
+		{
+			int bit = y * 16 + x; // Index for the MousePointer array
+			int byte = bit / 8;
+
+			if ( ( MouseCursor[byte] ) & ( 0b10000000 >> ( x % 8 ) ) )
+			{
+				if ( GetPix( { (uint32_t)pos.X + (uint32_t)x, (uint32_t)pos.Y + (uint32_t)y } ) == MouseCursorBufferNext[x + y * 16] ) // If it hasn't been written over
+				{
+					PushColour( MouseCursorBuffer[x + y * 16] );
+					PutPix( { (uint32_t)pos.X + (uint32_t)x, (uint32_t)pos.Y + (uint32_t)y } );
+					PopColour();
+				}
+			}
+		}
+	}
+}
+
+void BasicRenderer::DrawOverlayMouseCursor( Point pos, uint8_t* MouseCursor, uint32_t colour )
+{
+	int xMax = 16;
+	int yMax = 16;
+	int diffX = TargetFramebuffer->Width - pos.X;
+	int diffY = TargetFramebuffer->Height - pos.Y;
+
+	// Prevent going over frame buffer
+	if ( diffX < xMax ) xMax = diffX;
+	if ( diffY < yMax ) yMax = diffY;
+
+	for ( int y = 0; y < yMax; y++ )
+	{
+		for ( int x = 0; x < xMax; x++ )
+		{
+			int bit = y * 16 + x; // Index for the MousePointer array
+			int byte = bit / 8;
+
+			if ( ( MouseCursor[byte] ) & ( 0b10000000 >> ( x % 8 ) ) )
+			{
+				MouseCursorBuffer[x + y * yMax] = GetPix( { (uint32_t)pos.X + (uint32_t)x, (uint32_t)pos.Y + (uint32_t)y } ); // Save previous pixel
+
+				PushColour( colour );
+				PutPix( { (uint32_t)pos.X + (uint32_t)x, (uint32_t)pos.Y + (uint32_t)y } );
+				PopColour();
+
+				MouseCursorBufferNext[x + y * yMax] = GetPix( { (uint32_t)pos.X + (uint32_t)x, (uint32_t)pos.Y + (uint32_t)y } ); // Save current pixel
+			}
+		}
+	}
+
+	MouseDrawn = true;
+}
+
+// Colour
 
 void BasicRenderer::PushColour( uint32_t p_Colour )
 {
@@ -123,6 +194,16 @@ void BasicRenderer::PutPix( PointU p )
 
 	if ( pixPtr < TargetFramebuffer->BufferSize && pixPtr >= 0 )
 		*( (uint32_t*)TargetFramebuffer->BaseAddress + pixPtr ) = Colour;
+}
+
+uint32_t BasicRenderer::GetPix( PointU p )
+{
+	uint32_t pixPtr = p.X + p.Y * TargetFramebuffer->PixelsPerScanLine;
+
+	if ( pixPtr < TargetFramebuffer->BufferSize && pixPtr >= 0 )
+		return *( (uint32_t*)TargetFramebuffer->BaseAddress + pixPtr );
+
+	return DEFAULT_BG_COLOUR;
 }
 
 void BasicRenderer::Line( PointU p1, PointU p2 )

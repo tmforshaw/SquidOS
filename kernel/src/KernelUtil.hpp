@@ -5,6 +5,7 @@
 #include "Interfaces/TextInterface.hpp"
 #include "Memory/EFI_Memory.hpp"
 #include "Memory/Memory.hpp"
+#include "PCI/ACPI.hpp"
 #include "Paging/PageFrameAllocator.hpp"
 #include "Paging/PageMapIndexer.hpp"
 #include "Paging/PageTableManager.hpp"
@@ -22,6 +23,7 @@ struct BootInfo
 	EFI_MEMORY_DESCRIPTOR* m_Map;
 	uint64_t m_MapSize;
 	uint64_t m_MapDescriptorSize;
+	ACPI::RSDP2* rsdp; // Root system descriptor pointer
 };
 
 extern uint64_t _KernelStart;

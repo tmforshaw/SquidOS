@@ -5,6 +5,8 @@
 #include "PageFrameAllocator.hpp"
 #include "PageMapIndexer.hpp"
 
+PageTableManager GlobalPageTableManager = 0;
+
 PageTableManager::PageTableManager( PageTable* PML4Address )
 {
 	this->PML4 = PML4Address;

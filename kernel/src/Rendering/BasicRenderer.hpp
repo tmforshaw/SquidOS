@@ -16,7 +16,13 @@ public:
 	uint32_t ClearColour;
 	uint32_t ColourStack; // Used to temporarily hold colours
 
+	uint32_t MouseCursorBuffer[16 * 16];
+	uint32_t MouseCursorBufferNext[16 * 16];
+	bool MouseDrawn;
+
 	BasicRenderer( Framebuffer* p_TargetFramebuffer, PSF1_FONT* p_PSF1_Font, uint32_t p_Colour = GREEN, uint32_t p_ClearColour = BLACK );
+
+	// Text
 
 	void PutChar( char chr, uint32_t xOff, uint32_t yOff );
 	void Print( const char* str );
@@ -27,7 +33,12 @@ public:
 	void ClearChar( uint16_t xOff, uint16_t yOff, uint32_t colour = BLACK );
 	void Endl( uint16_t amt = 1 );
 
-	// Colour Stuff
+	// Mouse
+
+	void ClearMouseCursor( Point pos, uint8_t* MouseCursor );
+	void DrawOverlayMouseCursor( Point pos, uint8_t* MouseCursor, uint32_t colour = WHITE );
+
+	// Colours
 
 	void PushColour( uint32_t p_Colour );
 	void PopColour();
@@ -35,6 +46,7 @@ public:
 	// Drawing
 
 	void PutPix( PointU p );
+	uint32_t GetPix( PointU p );
 
 	void Line( PointU p1, PointU p2 );
 

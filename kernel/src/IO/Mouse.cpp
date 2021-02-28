@@ -5,9 +5,34 @@
 
 uint8_t MouseCycle = 0;
 uint8_t MousePacket[4];
-bool MousePacketReady = false;
+bool	MousePacketReady = false;
 
 Point MousePosition;
+Point MousePositionPrev;
+
+// This is the shape of the mouse
+uint8_t MousePointer[] = { // 16-bit by 16-bit array
+	0b11111111, 0b11100000,
+	0b11111111, 0b10000000,
+	0b11111110, 0b00000000,
+	0b11111100, 0b00000000,
+	0b11111000, 0b00000000,
+	0b11110000, 0b00000000,
+	0b11100000, 0b00000000,
+	0b11000000, 0b00000000,
+	0b11000000, 0b00000000,
+	0b10000000, 0b00000000,
+	0b10000000, 0b00000000,
+	0b00000000, 0b00000000,
+	0b00000000, 0b00000000,
+	0b00000000, 0b00000000,
+	0b00000000, 0b00000000,
+	0b00000000, 0b00000000
+};
+
+bool LeftButtonDown	  = false;
+bool MiddleButtonDown = false;
+bool RightButtonDown  = false;
 
 void MouseWait()
 {
@@ -65,9 +90,9 @@ void HandlePS2Mouse( uint8_t data )
 
 	case 2:
 		if ( MousePacketReady ) break;
-		MousePacket[2] = data;
+		MousePacket[2]	 = data;
 		MousePacketReady = true; // Handled all packets
-		MouseCycle = 0;
+		MouseCycle		 = 0;
 		break;
 
 	default:
@@ -105,19 +130,45 @@ void ProcessMousePacket()
 
 	// X
 	if ( MousePosition.X < 0 ) MousePosition.X = 0;
-
-	if ( MousePosition.X > GlobalRenderer->TargetFramebuffer->Width - PSF1_FontWidth )
-		MousePosition.X = GlobalRenderer->TargetFramebuffer->Width - PSF1_FontWidth;
+	if ( MousePosition.X > GlobalRenderer->TargetFramebuffer->Width - 1 ) MousePosition.X = GlobalRenderer->TargetFramebuffer->Width - 1;
 
 	// Y
 	if ( MousePosition.Y < 0 ) MousePosition.Y = 0;
-
-	if ( MousePosition.Y > GlobalRenderer->TargetFramebuffer->Height - GlobalRenderer->PSF1_Font->psf1_Header->charsize )
-		MousePosition.Y = GlobalRenderer->TargetFramebuffer->Height - GlobalRenderer->PSF1_Font->psf1_Header->charsize;
+	if ( MousePosition.Y > GlobalRenderer->TargetFramebuffer->Height - 1 ) MousePosition.Y = GlobalRenderer->TargetFramebuffer->Height - 1;
 
 	// Display
 
-	GlobalRenderer->PutChar( 'A', MousePosition.X, MousePosition.Y );
+	GlobalRenderer->ClearMouseCursor( MousePositionPrev, MousePointer );
+	GlobalRenderer->DrawOverlayMouseCursor( MousePosition, MousePointer );
+
+	if ( MousePacket[0] & PS2LeftButton && !LeftButtonDown ) // Left button pressed
+		LeftButtonDown = true;
+	else if ( LeftButtonDown )
+		LeftButtonDown = false;
+
+	if ( MousePacket[0] & PS2MiddleButton && !MiddleButtonDown ) // Middle button pressed
+		MiddleButtonDown = true;
+	else if ( LeftButtonDown )
+		MiddleButtonDown = false;
+
+	if ( MousePacket[0] & PS2RightButton && !RightButtonDown ) // Right button pressed
+		RightButtonDown = true;
+	else if ( RightButtonDown )
+		RightButtonDown = false;
+
+	// if ( RightButtonDown )
+	// 	GlobalRenderer->PushColour( BLUE );
+
+	// if ( MiddleButtonDown )
+	// 	GlobalRenderer->PushColour( RED );
+
+	// if ( LeftButtonDown )
+	// 	GlobalRenderer->Rect( { (uint32_t)MousePosition.X, (uint32_t)MousePosition.Y }, 4, 4, true );
+
+	// GlobalRenderer->PopColour();
+
+	MousePacketReady  = false;
+	MousePositionPrev = MousePosition;
 }
 
 void InitPS2Mouse()
